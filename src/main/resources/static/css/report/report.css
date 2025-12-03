@@ -1,0 +1,314 @@
+.content-box {
+	padding: 40px;
+}
+.report-title {
+	font-size: 20px;
+	font-weight: 700;
+	display: block;
+}
+.report-input {
+	margin: 0 20px;
+	margin-bottom: 20px;
+}
+.report-input-tag {
+	border-radius: 5px;
+    border: 1px solid #11111333;
+    margin-top: 10px;
+    padding: 8px;
+	outline: none;
+}
+.text {
+	width: 100%;
+}
+
+
+select {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+
+  color: #444;
+  background-color: #fff;
+
+  padding: 0.3rem;
+  margin: 0;
+  margin-top: 10px;
+
+  border: 1px solid #aaa;
+  border-radius: 0.5em;
+  box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.04);
+}
+.btn-flex {
+	display: flex;
+	justify-content: space-around;
+}
+.btn-back,
+.btn-report {
+	font-size: 1.5rem;
+	border-radius: 5px;
+	padding: 10px 20px;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: 700;
+	
+	&:hover {
+	   transform: scale(1.05)
+	}
+}
+.btn-back {
+	background-color: #7B61FF;
+}
+.btn-report {
+    background-color: #FF676A;
+}
+
+textarea {
+	font-size: 18px;
+	padding: 10px;
+	height: 180px;
+	overflow: auto;
+	resize: none;
+	outline: none;
+}
+
+.require-mark {
+    display: inline-block;
+    padding-top: 5px;
+    color: red;
+    vertical-align: middle;
+}
+.ttl {
+	width: 80%;
+}
+
+/* 파일 업로드 래퍼 */
+.file-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 파일 미리보기 컨테이너 - 가로 스크롤 */
+.file-preview-container {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    flex: 1;
+    align-items: center;
+}
+
+/* 스크롤바 스타일링 */
+.file-preview-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.file-preview-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.file-preview-container::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* 개별 파일 아이템 */
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+/* 파일명 텍스트 */
+.file-name {
+    color: #0066cc;
+    font-size: 14px;
+    cursor: default;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 삭제 버튼 */
+.file-remove-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+}
+
+.file-remove-btn:hover {
+    background-color: #cc0000;
+}
+
+/* 파일이 없을 때 메시지 */
+.no-files-message {
+    color: #999;
+    font-size: 13px;
+}
+
+.list-head {
+	border: 1px solid #D9D5EC;
+	
+}
+.list-item {
+	border: 1px solid #D9D5EC;
+	border-top: 0;
+}
+
+.list-head,
+.list-item {	
+	display: flex;
+	background-color: #F4F2FF;
+	padding: 15px 20px;
+	margin: 0px 75px;
+	min-width: 885px;
+}
+
+.list-item.white {
+	background-color: #fff;
+}
+
+.f1,
+.f2,
+.f3,
+.f4,
+.f5 {
+	flex-grow: 1;
+	color: #6E6893;
+	min-width: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.f5.detail span{
+	cursor: pointer;
+	border-radius: 5px;
+	color: #fff;
+	background-color: #7B61FF;
+    padding: 5px 10px;
+	
+	&:hover {
+	   transform: scale(1.05);
+	}
+}
+
+.f1 {
+	flex-basis: 25%;
+}
+.f2 {
+	flex-basis: 45%;
+}
+.f3,
+.f4,
+.f5 {
+	flex-basis: 10%;
+}
+
+.report-list-wrapper {
+	width: 100%;
+}
+
+.complete {
+	padding: 5px 10px;
+	border-radius: 15px;
+	color: #007F00;
+	background-color: #CDFFCD;
+}
+.not-complete {
+	padding: 5px 10px;
+    border-radius: 15px;
+    color: #D30000;
+    background-color: #FFE0E0;
+}
+
+/* 페이지네이터 래퍼 - 중앙 정렬 */
+.paginator-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    width: 100%;
+}
+
+/* 페이지네이터 기본 스타일 */
+.paginator {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+}
+
+.paginator li {
+    display: inline-block;
+}
+
+.paginator li a {
+    display: block;
+    padding: 8px 12px;
+    border: 1px solid #D9D5EC;
+    border-radius: 5px;
+    color: #6E6893;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.paginator li a:hover {
+    background-color: #F4F2FF;
+    transform: scale(1.05);
+}
+
+
+.paginator li.active a {
+    background-color: #7B61FF;
+    color: #fff;
+    border-color: #7B61FF;
+}
+
+
+.paginator li:first-child a,
+.paginator li:last-child a {
+    font-weight: 600;
+}
+
+.report-file{
+	width: 300px;
+	display: block;
+	font-size: 12px;
+	&:hover {
+	   text-decoration: underline;
+	}
+	
+}
+
+.no-report-file {
+	border-radius: 5px;
+	width: 50px;
+	font-size: 14px;
+	display: flex;
+	background-color: #F3F3F3;
+	font-weight: 700;
+	padding: 5px 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+.report-input-tag.view-detail {
+	color: #333;
+	background-color: #fff;
+}

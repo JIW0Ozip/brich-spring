@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.report.dao.impl.AdminReportDaoImpl">
+    
+    <!-- 신고 관리 - 신고 목록 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.report.vo.AdminReportListVO" id="AdminReportListVOMap" autoMapping="true">
+        <id column="RPT_ID" property="rptId"/>
+        <result column="LOG_ID" property="logId"/>
+        <result column="CD_ID" property="cdId"/>
+        <result column="CD_NM" property="cdNm"/>
+        <result column="PRCN_DT" property="prcnDt"/>
+    </resultMap>
+    <select id="selectAdminReportList" resultMap="AdminReportListVOMap">
+        SELECT R.RPT_ID
+             , U.LOG_ID
+             , R.RPT_TITLE
+             , R.RPT_FL_GRP_ID
+             , C.CD_ID 
+             , C.CD_NM
+             , R.CRT_DT
+             , R.PRCN_YN
+             , CASE 
+                   WHEN R.PRCN_YN = 'Y'
+                    AND R.PRCN_USR_ID IS NOT NULL
+                   THEN TO_CHAR(R.UPDT_DT, 'YYYY-MM-DD HH24:MI:SS')
+               ELSE '-'
+             END AS PRCN_DT
+          FROM RPT R
+          LEFT OUTER JOIN USR U
+            ON U.USR_ID = R.RPTR_USR_ID
+          LEFT OUTER JOIN CM_CD C
+            ON C.CD_ID = R.RPT_RSN
+         WHERE R.DLT_YN = 'N'
+         ORDER BY 
+          CASE 
+              WHEN R.PRCN_YN = 'Y'
+               AND R.PRCN_USR_ID IS NOT NULL
+              THEN 1
+              ELSE 0
+          END ASC
+            , R.CRT_DT DESC
+            , PRCN_DT DESC
+    </select>
+    
+    <!-- 신고 관리 - 상세 정보 조회 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.report.vo.AdminReportDetailVO" id="AdminReportDetailVOMap" autoMapping="true">
+        <id column="RPT_ID" property="rptId"/>
+        <result column="PRCN_DT" property="prcnDt"/>
+        <result column="RPTR_LOG_ID" property="rptrLogId"/>
+        <result column="RPTED_LOG_ID" property="rptedLogId"/>
+        <result column="CD_ID" property="cdId"/>
+        <result column="CD_NM" property="cdNm"/>
+        
+        <collection javaType="list" ofType="com.ktdsuniversity.edu.domain.file.vo.FileVO" property="fileList" autoMapping="true">
+            <result column="FL_ID" property="flId"/>
+            <result column="FL_NM" property="flNm"/>
+            <result column="FL_PTH" property="flPth"/>
+            <result column="FL_SZ" property="flSz"/>
+            <result column="FL_TYP" property="flTyp"/>
+            <result column="OBFSCTIN_FL_NM" property="obfsctinFlNm"/>
+        </collection>
+    </resultMap>
+    <select id="selectAdminReportDetailById" parameterType="string" resultMap="AdminReportDetailVOMap">
+        SELECT R.RPT_ID
+             , R.RPTR_USR_ID
+             , U_RPTR.LOG_ID AS RPTR_LOG_ID
+             , R.RPTED_USR_ID
+             , U_RPTED.LOG_ID AS RPTED_LOG_ID
+             , R.RPT_TITLE
+             , R.CRT_DT
+             , C.CD_ID 
+             , C.CD_NM
+             , R.RPT_CN
+             , R.RPT_FL_GRP_ID
+             , R.PRCN_YN
+             , F.FL_ID 
+             , F.FL_NM 
+             , F.FL_PTH 
+             , F.FL_SZ 
+             , F.FL_TYP 
+             , F.OBFSCTIN_FL_NM 
+             , CASE 
+                   WHEN R.PRCN_YN = 'Y'
+                    AND R.PRCN_USR_ID IS NOT NULL
+                   THEN TO_CHAR(R.UPDT_DT, 'YYYY-MM-DD HH24:MI:SS')
+               ELSE '-'
+                END AS PRCN_DT
+          FROM RPT R
+          LEFT OUTER JOIN USR U_RPTR
+            ON U_RPTR.USR_ID = R.RPTR_USR_ID
+          LEFT OUTER JOIN USR U_RPTED
+            ON U_RPTED.USR_ID = R.RPTED_USR_ID
+          LEFT OUTER JOIN CM_CD C
+            ON C.CD_ID = R.RPT_RSN
+          LEFT OUTER JOIN FL F
+            ON F.FL_GRP_ID = R.RPT_FL_GRP_ID
+         WHERE R.RPT_ID = #{_parameter}
+           AND R.DLT_YN = 'N'
+    </select>
+    
+    <!-- 신고 처리 UPDATE -->
+    <update id="updateReportInfo" parameterType="com.ktdsuniversity.edu.domain.report.vo.AdminPenaltyRequestVO">
+        UPDATE RPT
+           SET PRCN_YN = 'Y'
+             , PRCN_USR_ID = #{adminId}
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE RPT_ID = #{rptId}
+           AND DLT_YN = 'N'
+    </update>
+    
+</mapper>

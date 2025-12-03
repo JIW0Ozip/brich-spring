@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.campaign.dao.impl.CampaignUpdateHistoryDaoImpl">
+    
+    <!-- 캠페인 반려 시 UPDATE되는 내용을 수정 이력 테이블에 INSERT -->
+    <insert id="insertAdminCampaignHistoryByReject" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.CampaignUpdateHistoryVO">
+        <selectKey keyColumn="CMPN_UPDT_HIST_ID" keyProperty="cmpnUpdtHistId" order="BEFORE" resultType="string">
+            SELECT 'CMPN_UPDT_HIST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_CMPN_UPDT_HIST_PK.NEXTVAL, 6, '0')
+              FROM DUAL
+        </selectKey>
+        INSERT INTO CMPN_UPDT_HIST (CMPN_UPDT_HIST_ID
+                                  , CMPN_ID
+                                  , UPDT_ITEM
+                                  , BEF_UPDT_CN
+                                  , AFT_UPDT_CN
+                                  , UPDT_ADMIN
+                                  , UPDT_RSN
+                                  , CRT_DT
+                                  , CRTR
+                                  , UPDT_DT
+                                  , MTTR
+                                  , DLT_YN)
+                            VALUES (#{cmpnUpdtHistId}
+                                  , #{cmpnId}
+                                  , #{updtItem}
+                                  , #{befUpdtCn}
+                                  , #{aftUpdtCn}
+                                  , #{updtAdmin}
+                                  , #{updtRsn}
+                                  , SYSDATE
+                                  , #{updtAdmin}
+                                  , SYSDATE
+                                  , #{updtAdmin}
+                                  , 'N')
+    </insert>
+    
+    <!-- 캠페인 승인 시 UPDATE되는 내용을 수정 이력 테이블에 INSERT -->
+    <insert id="insertAdminCampaignHistoryByApprove" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.CampaignUpdateHistoryVO">
+        <selectKey keyColumn="CMPN_UPDT_HIST_ID" keyProperty="cmpnUpdtHistId" order="BEFORE" resultType="string">
+            SELECT 'CMPN_UPDT_HIST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_CMPN_UPDT_HIST_PK.NEXTVAL, 6, '0')
+              FROM DUAL
+        </selectKey>
+        INSERT INTO CMPN_UPDT_HIST (CMPN_UPDT_HIST_ID
+                                  , CMPN_ID
+                                  , UPDT_ITEM
+                                  , BEF_UPDT_CN
+                                  , AFT_UPDT_CN
+                                  , UPDT_ADMIN
+                                  , UPDT_RSN
+                                  , CRT_DT
+                                  , CRTR
+                                  , UPDT_DT
+                                  , MTTR
+                                  , DLT_YN)
+                            VALUES (#{cmpnUpdtHistId}
+                                  , #{cmpnId}
+                                  , #{updtItem}
+                                  , #{befUpdtCn}
+                                  <if test="updtItem.equals('STTS_CD')">
+                                  , #{aftUpdtCn}
+                                  </if>
+                                  <if test="updtItem.equals('CNFM_DT')">
+                                  , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS')
+                                  </if>
+                                  , #{updtAdmin}
+                                  , #{updtRsn}
+                                  , SYSDATE
+                                  , #{updtAdmin}
+                                  , SYSDATE
+                                  , #{updtAdmin}
+                                  , 'N')
+    </insert>
+    
+</mapper>

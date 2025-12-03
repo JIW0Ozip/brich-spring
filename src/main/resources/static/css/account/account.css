@@ -1,0 +1,253 @@
+* {
+    box-sizing: border-box;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    
+    & > .application-main {
+        width: 100vw;
+        
+        & > .side-menu {
+            min-width: 290px;
+        }
+    }
+} 
+
+.account-info-item,
+.account-select-itme {
+	margin: 20px 0;
+}
+.account-top-menu {
+	color: #6E6893;
+	padding: 0 10px;
+	cursor: pointer;
+}
+
+.account-menu-box {
+	border-bottom: 1px solid #C6C2DE;
+	display: flex;
+}
+
+.point {
+	border-bottom : 3px solid #333;
+}
+.account-wrapper {
+	min-width: 1200px;
+	flex-grow: 1;
+}
+.account-info-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.item-content {
+	background-color: #fff;
+	font-size: 20px;
+	color: #11111399;
+    border-radius: 3px;
+    padding: 0 15px;
+	width: 450px;
+	height: 50px;
+    border: 1px solid #11111333;
+}
+
+.space {
+	margin-bottom: 10px;
+}
+
+.account-select-item {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.select-list {
+	max-width: 366px;
+	font-size: 12px;
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.select-list-item {
+	font-weight: 700;
+	border-radius: 3px;
+	padding: 3px 5px;
+	background-color: #E7E9ED;
+}
+
+.category-reset,
+.area-reset {
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	background-color: #7B61FF;
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+	padding: 0 5px;
+
+	&:hover {
+	   transform: scale(1.05);
+	} 
+}
+
+.reset-password-confirm,
+.modify-confirm {
+	padding: 5px 0;
+	border-radius: 8px;
+    display: flex;
+    background-color: #5275C1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    justify-content: center;
+    align-items: center;
+    
+    &:hover { 
+        transform: scale(1.01);
+    }
+}
+
+input[type="password"].item-content {
+	font-size: 1rem;
+}
+
+.no-sub-wrapper {
+	margin-top: 280px;
+	flex-grow: 1;
+	display	: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 100px;
+	
+}
+.sub-alert {
+	font-size: 36px;
+	font-weight: 500;
+	color: #5A6ACF;
+}
+
+.go-sub-page, .go-expand-page {
+	border-radius: 5px;
+	font-size: 24px;
+	padding: 10px;
+	color: #fff;
+	background-color: #7B61FF;
+	
+	&:hover {
+	   transform: scale(1.05);
+	}
+}
+
+.sub-wrapper {
+	margin-top: 20px;
+	margin-left: 20px;
+}
+
+.sub-info-box {
+	margin-top: 20px;
+	padding: 0px 30px;
+	box-shadow: 0 0 12px rgba(0,0,0,0.15);
+	border-radius: 5px;
+	width: 600px;
+	height: 150px;
+	display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.sub-info-bottom {
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.go-expand-page {
+	font-size: 16px;
+	padding: 8px 20px;
+}
+
+.account-wrapper .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.account-wrapper .modal.show {
+    display: flex;
+}
+
+
+.account-wrapper .modal-area {
+    position: relative;
+    margin: auto;
+}
+
+/* 모달 전체 화면 덮기 */
+body > .modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 10000 !important;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5) !important;
+    margin: 0 !important;
+}
+
+/* 모달 내부 컨텐츠 중앙 배치 */
+body > .modal .modal-area {
+    position: relative;
+    z-index: 10001;
+}
+
+.category-checkbox-wrapper {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #C6C2DE;
+    border-radius: 5px;
+    background-color: #F9F9F9;
+}
+
+.category-checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.category-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.category-checkbox-item label {
+    cursor: pointer;
+    font-size: 14px;
+}

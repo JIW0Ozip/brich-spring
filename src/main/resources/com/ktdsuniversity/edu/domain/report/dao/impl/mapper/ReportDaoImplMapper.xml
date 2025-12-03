@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.report.dao.impl.ReportDaoImpl">
+    <select id="selectReportCategoryList"
+            resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+        SELECT CD_ID
+		     , CD_NM
+		  FROM CM_CD
+		 WHERE PRNT_CD_ID = '8000'
+		   AND USE_YN = 'Y'
+		   AND DLT_YN = 'N'
+    </select>
+    
+    <insert id="insertReport"
+            parameterType="com.ktdsuniversity.edu.domain.report.vo.request.RequestReportCreateVO">
+        <selectKey keyProperty="rptId" order="BEFORE" resultType="string">
+         SELECT 'RPT-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_RPT_PK.NEXTVAL, 6, 0)
+           FROM DUAL
+      </selectKey>
+        
+        INSERT INTO RPT 
+		( RPT_ID
+		, RPTR_USR_ID
+		, RPTED_USR_ID
+		, RPT_TITLE
+		, RPT_RSN
+		, RPT_CN
+		, RPT_FL_GRP_ID 
+		, CRT_DT 
+		, CRTR 
+		, UPDT_DT 
+		, MTTR )
+		VALUES
+		( #{rptId}
+		, #{rptrUsrId}
+		, #{rptedUsrId}
+		, #{rptTitle}
+		, #{rptRsn}
+		, #{rptCn}
+		, #{rptFlGrpId}
+		, SYSDATE
+		, #{rptedUsrId}
+		, SYSDATE
+		, #{rptedUsrId})
+        
+    </insert>
+    
+    <select id="selectReportListByUsrId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.domain.report.vo.response.ResponseMyReportInfoVO">
+        SELECT U.NM
+		     , U.CMPNY
+		     , R.PRCN_YN 
+		     , R.CRT_DT 
+		     , R.RPT_TITLE 
+		     , R.RPT_ID 
+		  FROM RPT R
+		 INNER JOIN USR U
+		    ON R.RPTR_USR_ID = U.USR_ID 
+		 WHERE U.USR_ID = #{usrId}
+    </select>
+    
+      <select id="selectMyReportCount" 
+            parameterType="com.ktdsuniversity.edu.domain.report.vo.ReportSearchVO" 
+            resultType="_int">
+         SELECT COUNT(1)
+	       FROM RPT R
+	      INNER JOIN USR U
+	         ON R.RPTED_USR_ID = U.USR_ID
+	      WHERE R.RPTR_USR_ID = #{rptrUsrId}
+    </select>
+    
+    <!-- 추가: 신고자의 신고 목록 조회 (페이징) -->
+    <select id="selectMyReportListWithPaging" 
+            parameterType="com.ktdsuniversity.edu.domain.report.vo.ReportSearchVO" 
+            resultType="com.ktdsuniversity.edu.domain.report.vo.response.ResponseMyReportInfoVO">
+        <include refid="Common.paginationHeader" />
+        SELECT R.RPT_ID
+             , R.RPT_TITLE
+             , R.CRT_DT
+             , R.PRCN_YN
+             , U.NM
+             , U.CMPNY
+          FROM RPT R
+         INNER JOIN USR U
+            ON R.RPTED_USR_ID = U.USR_ID
+         WHERE R.RPTR_USR_ID = #{rptrUsrId}
+         ORDER BY R.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+    
+    <select id="selectReportDetailByReportId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.domain.report.vo.response.ResponseReportDetailVO">
+        SELECT R.RPT_ID 
+		     , R.RPTR_USR_ID 
+		     , R.RPT_TITLE 
+		     , R.RPT_CN 
+		     , U.NM AS rptedUsrNm
+		     , U.CMPNY AS rptedUsrCmpny
+		     , U.USR_ID AS rptedUsrId
+		     , R.RPT_FL_GRP_ID 
+		     , CC.CD_NM AS rptRsnNm
+		  FROM RPT R
+		 INNER JOIN USR U 
+		    ON R.RPTED_USR_ID = U.USR_ID
+		 INNER JOIN CM_CD CC
+		    ON R.RPT_RSN = CC.CD_ID 
+		 WHERE R.RPT_ID = #{rptId}
+    </select>
+</mapper>

@@ -1,0 +1,95 @@
+@charset "UTF-8";
+
+.rtrnRsn {
+	margin-bottom: 15px;
+}
+
+summary {
+    position: relative;
+    padding-right: 1.5em; 
+    cursor: pointer;
+    list-style: none; /* marker 제거를 위한 표준 방식 */
+}
+
+details > div:first-of-type {
+    padding-top: 10px; 
+}
+
+summary::before {
+    content: "펼치기";
+    
+    display: block;
+    color: #333;
+    text-indent: 0;
+}
+
+summary::marker {
+    content: none;
+}
+
+summary::after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    
+    border-left: 0.4em solid transparent;
+    border-right: 0.4em solid transparent;
+    border-top: 0.6em solid currentColor;
+    
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+}
+
+details[open] summary::before {
+    content: "접기";
+}
+
+details[open] summary::after {
+    transform: translateY(-50%) rotate(180deg); 
+}
+
+.btn-area {
+	text-align: right;
+	margin-right: 28em;
+}
+
+.approve-btn {
+    cursor: pointer;
+    
+    border: 0px solid #7B61FF;    
+    border-radius: 5px;
+    background-color: #7B61FF;
+    
+    color: #FFF;
+    font-size: 1.1rem;
+    
+    margin-top: 40px;
+    margin-left: 10px;
+    padding: 6px 20px;
+}
+
+.approve-btn:active {
+    background-color: rgba(81, 59, 190);
+}
+
+.reject-btn {
+    cursor: pointer;
+    
+    border: 0px solid #FF676A;    
+    border-radius: 5px;
+    background-color: #FF676A;
+    
+    color: #FFF;
+    font-size: 1.1rem;
+    
+    margin-top: 40px;
+    padding: 6px 20px;
+}
+
+.reject-btn:active {
+    background-color: rgba(190, 59, 61);
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.user.dao.impl.SubscriptionPaymentDaoImpl">
+    <select id="selectSubscriptionInfoByUserId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.domain.user.vo.response.ResponseUserSubscriptionInfoVO">
+        SELECT CC.CD_NM
+		     , TO_CHAR(U.SBSCRPTN_EXPRS_DT, 'YYYY.MM.DD') AS expireDate
+		  FROM SBSCRPTN_PYMNT SP
+		 INNER JOIN USR U
+		    ON SP.USR_ID = U.USR_ID
+		 INNER JOIN CM_CD CC
+		    ON CC.CD_ID = SP.SBSCRPTN_CD 
+		 WHERE U.USR_ID = #{usrId}
+		 ORDER BY SP.CRT_DT DESC
+		 FETCH FIRST 1 ROWS ONLY
+    </select>
+</mapper>

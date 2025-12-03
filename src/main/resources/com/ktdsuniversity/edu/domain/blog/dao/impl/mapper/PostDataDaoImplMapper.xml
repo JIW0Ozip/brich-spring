@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.blog.dao.impl.PostDataDaoImpl">
+    
+    <insert id="insertPostData"
+    		parameterType="com.ktdsuniversity.edu.domain.blog.vo.PostDataInsertVO">
+    <selectKey keyProperty="pstDaId" order="BEFORE" resultType="string">
+    SELECT 'PST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_PST_DA_PK.NEXTVAL, 6, 0)
+           FROM DUAL
+    </selectKey>
+    INSERT INTO TEAM_A.PST_DA
+           (PST_DA_ID
+         , USR_ID
+         , PST_URL
+         , PST_CMNT
+         , PST_LK
+         , PSTD_DT
+         , CRT_DT
+         , CRTR
+         , UPDT_DT
+         , MTTR
+         , DLT_YN)
+    VALUES(#{pstDaId}
+         , (SELECT U.USR_ID FROM TEAM_A.USR U WHERE U.BLG_ADDRS = #{blgAddrs})
+         , #{pstUrl}
+         , #{pstCmnt}
+         , #{pstLk}
+         , TO_DATE(#{pstdDt}, 'YYYY-MM-DD HH24:MI:SS')
+         , SYSDATE
+         , 'SYSTEM'
+         , SYSDATE
+         , 'SYSTEM'
+         , 'N'	)
+    
+    </insert>
+    
+    <select id="selectBlogIndex"
+    		parameterType="string"
+    		resultType="com.ktdsuniversity.edu.domain.blog.vo.BlogIndexVO">
+    SELECT USR_ID
+    	 , TO_CHAR(STAT_DT, 'MM-DD') AS STAT_DT
+    	 , INDX_VAL
+    	 , INDX_VAL_AVG_5D
+    	 , OVLL_BLG_INDX
+    	 , CRT_DT
+    	 , CRTR
+    	 , UPDT_DT
+    	 , MTTR
+	  FROM TEAM_A.BLG_INDX
+	 WHERE USR_ID = #{_parameter}
+	   AND STAT_DT > SYSDATE - 20 
+	 ORDER BY STAT_DT
+    </select>
+    
+    <select id="selectRecentIndex"
+    		parameterType="string">
+    
+    SELECT NVL(OVLL_BLG_INDX,0) AS OVLL_BLG_INDX
+	  FROM TEAM_A.BLG_INDX
+	 WHERE USR_ID = #{_parameter}
+	   AND OVLL_BLG_INDX IS NOT NULL
+	 ORDER BY STAT_DT DESC
+ 	 FETCH FIRST 1 ROWS ONLY
+    </select>
+    
+    <select id="selectBlogDetailStat"
+    		parameterType="string"
+    		resultType="com.ktdsuniversity.edu.domain.blog.vo.BlogDetailStatVO">
+    WITH date_range AS ( 
+    SELECT TRUNC(SYSDATE - 20) + LEVEL - 1 AS STAT_DATE
+    FROM DUAL
+    CONNECT BY LEVEL <![CDATA[ <=]]> (TRUNC(SYSDATE - 6) - TRUNC(SYSDATE - 20)) + 1
+)
+SELECT 
+    TO_CHAR(d.STAT_DATE, 'YYYY-MM-DD') AS DT,
+    NVL(COUNT(p.PST_URL), 0) AS POST_COUNT,
+    ROUND(NVL(AVG(p.PST_LK), 0), 2) AS AVG_LK,
+    ROUND(NVL(AVG(p.PST_CMNT), 0), 2) AS AVG_CMMT,
+    ROUND(NVL(AVG(v.VSTR_CNT), 0), 2) AS VST_CNT
+FROM date_range d
+LEFT JOIN TEAM_A.DLY_VSTR v
+    ON TRUNC(v.VST_DT) = d.STAT_DATE
+   AND v.USR_ID = #{_parameter}
+LEFT JOIN TEAM_A.PST_DA p
+    ON TRUNC(p.PSTD_DT) = d.STAT_DATE
+   AND p.USR_ID = #{_parameter}  -- ✅ 여기도 직접 사용자 ID로 조인
+GROUP BY d.STAT_DATE
+ORDER BY d.STAT_DATE
+
+    </select>
+    
+</mapper>

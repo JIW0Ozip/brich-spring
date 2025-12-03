@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.user.dao.impl.UserAreaDaoImpl">
+    <select id="selectUserAreaByUserId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.global.common.AreaCode"> 
+        SELECT A.CD_ID
+		     , CASE 
+		         WHEN P.CD_NM IS NOT NULL THEN P.CD_NM || ' ' || A.CD_NM
+		         ELSE A.CD_NM
+		       END AS CD_NM
+		  FROM USR_AR U
+		 INNER JOIN AR_CD A
+		    ON U.AR_ID = A.CD_ID
+		  LEFT JOIN AR_CD P
+		    ON A.PRNT_CD_ID = P.CD_ID
+		 WHERE U.USR_ID = #{usrId}
+		   AND U.DLT_YN = 'N'  
+	</select>
+    
+    <update id="updateDltYnByUsrId"
+            parameterType="string">
+        UPDATE USR_AR
+           SET DLT_YN = 'Y'
+         WHERE USR_ID = #{usrId}    
+    </update>
+    
+    <insert id="insertArea"
+            parameterType="com.ktdsuniversity.edu.domain.user.vo.UserAreaVO">
+        <selectKey keyProperty="usrArId" order="BEFORE" resultType="string">
+         SELECT 'USR_AR-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_USR_AR_PK.NEXTVAL, 6, 0)
+           FROM DUAL
+      </selectKey>
+        INSERT INTO USR_AR
+		( USR_AR_ID
+		, USR_ID
+		, AR_ID
+		, CRT_DT
+		, CRTR
+		, UPDT_DT
+		, MTTR)
+		VALUES
+		( #{usrArId}
+		, #{usrId}
+		, #{arId}
+		, SYSDATE
+		, #{usrId}
+		, SYSDATE
+		, #{usrId})
+     </insert>
+</mapper>

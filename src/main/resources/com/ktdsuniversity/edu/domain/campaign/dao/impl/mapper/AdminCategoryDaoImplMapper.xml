@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.campaign.dao.impl.AdminCategoryDaoImpl">
+    
+    <!-- 캠페인 카테고리 목록 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO" id="AdminCampaignCategoryVOMap" autoMapping="true">
+        <result column="LEVEL" property="level"/>
+        
+        <result column="CD_ID" property="cdId"/>
+        <result column="CD_NM" property="cdNm"/>
+        <result column="PRNT_CD_ID" property="prntCdId"/>
+        
+        <result column="PRNT_CD_NM" property="prntCdNm"/>
+        
+        <result column="USE_YN" property="useYn"/>
+        <result column="SRT" property="srt"/>
+        <result column="CRT_DT" property="crtDt"/>
+        <result column="CRTR" property="crtr"/>
+        <result column="UPDT_DT" property="updtDt"/>
+        <result column="MTTR" property="mttr"/>
+        <result column="DLT_YN" property="dltYn"/>
+    </resultMap>
+    <select id="selectCampaignCategoryList" resultMap="AdminCampaignCategoryVOMap">
+        SELECT LEVEL
+             , CD_ID 
+             , CD_NM
+             , PRNT_CD_ID
+             , PRIOR CD_NM AS PRNT_CD_NM
+             , USE_YN
+             , SRT
+             , CRT_DT
+             , CRTR
+             , UPDT_DT
+             , MTTR
+             , DLT_YN
+          FROM CM_CD
+         START WITH PRNT_CD_ID = '3000'
+       CONNECT BY PRIOR CD_ID = PRNT_CD_ID
+         ORDER SIBLINGS BY SRT
+    </select>
+    
+    <!-- 카테고리 분할 - 해당 카테고리의 하위 카테고리 출력 -->
+    <select id="selectChildrenCategoryList" resultType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO" parameterType="string">
+        SELECT CD_ID
+             , CD_NM
+          FROM CM_CD
+         WHERE PRNT_CD_ID = #{_parameter}
+           AND DLT_YN = 'N'
+         ORDER BY CD_ID ASC
+    </select>
+    
+    <!-- 카테고리 병합 - 해당 카테고리 제외, 상위 카테고리 출력 -->
+    <select id="selectParentCategoryList" resultType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO" parameterType="string">
+        SELECT CD_ID
+             , CD_NM
+          FROM CM_CD
+         WHERE CD_ID != #{_parameter}
+           AND PRNT_CD_ID = '3000'
+           AND DLT_YN = 'N'
+         ORDER BY CD_ID ASC
+    </select>
+    
+    <!-- 현재 캠페인 카테고리 중, 가장 마지막 cdId 값을 가져옴 -->
+    <select id="selectLastCampaignCdId" resultType="string">
+        SELECT MAX(CD_ID) AS LAST_CD_ID
+          FROM CM_CD
+         WHERE CD_ID BETWEEN '3001' AND '3999'
+    </select>
+    
+    <!-- 현재 캠페인 카테고리 중, 999를 제외한 가장 큰(마지막) srt 값을 가져옴 -->
+    <select id="selectLastSrtNumber" resultType="_int">
+        SELECT MAX(SRT) AS LAST_SRT
+          FROM CM_CD
+         WHERE CD_ID BETWEEN '3001' AND '3999'
+           AND USE_YN = 'Y'
+           AND SRT != 999
+    </select>
+    
+    <!-- 카테고리 추가, row 신경 안 씀 (INSERT) -->
+    <insert id="insertNewCampaignCategory" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO">
+        INSERT INTO CM_CD (CD_ID
+                         , CD_NM
+                         , PRNT_CD_ID
+                         , USE_YN
+                         , SRT
+                         , KEY1
+                         , VALUE1
+                         , KEY2
+                         , VALUE2
+                         , KEY3
+                         , VALUE3
+                         , CRT_DT
+                         , CRTR
+                         , UPDT_DT
+                         , MTTR
+                         , DLT_YN)
+                   VALUES (#{cdId}
+                         , #{cdNm}
+                         , '3000'
+                         , 'Y'
+                         , #{srt}
+                         , NULL
+                         , NULL
+                         , NULL
+                         , NULL
+                         , NULL
+                         , NULL
+                         , SYSDATE
+                         , #{adminId} 
+                         , SYSDATE
+                         , #{adminId}
+                         , 'N')
+    </insert>
+    
+    <!-- 카테고리 분할 (뒷 번호) -->
+    <update id="updateDivCampaignCategory" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO">
+        UPDATE CM_CD
+           SET PRNT_CD_ID = '3000'
+             , USE_YN = 'Y'
+             , SRT = #{srt}
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE CD_ID = #{cdId}
+    </update>
+    
+    <!-- 카테고리 병합 (병합시킨 카테고리는 탭에서 제외되어 노출되지 않음) -->
+    <update id="updateMergeCampaignCategory" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO">
+        UPDATE CM_CD
+           SET PRNT_CD_ID = #{prntCdId}
+             , USE_YN = 'N'
+             , SRT = 999
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE CD_ID = #{cdId}
+    </update>
+    
+    <!-- 병합된 카테고리의 SRT 값 기준으로, 999 제외 기준보다 큰 값들의 SRT 값을 -1 (한 칸씩 앞으로 당기기) -->
+    <update id="updateMergeAfterSrtValueOneMinus" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO">
+        UPDATE CM_CD
+           SET SRT = SRT - 1
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE PRNT_CD_ID = '3000'
+           AND SRT > #{srt}
+    </update>
+    
+    <!-- 카테고리 노출 순서 변경 (변경된 순서대로 cdId 값이 할당된 List를 forEach로 돌려서 UPDATE) -->
+    <update id="updateChangeOrderCampaignCategory" parameterType="com.ktdsuniversity.edu.domain.campaign.vo.AdminCampaignCategoryVO">
+        UPDATE CM_CD
+           SET SRT = (CASE CD_ID
+            <foreach collection="orderedCdIdList" item="cdId" index="index">
+                          WHEN #{cdId}
+                          THEN #{index} + 1
+            </foreach>
+                       END)
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE CD_ID IN
+         <foreach collection="orderedCdIdList" item="cdId" open="(" separator="," close=")">
+             #{cdId}
+         </foreach>
+    </update>
+    
+</mapper>

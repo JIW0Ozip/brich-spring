@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.file.dao.impl.FileDaoImpl">
+    <insert id="insertFile"
+            parameterType="com.ktdsuniversity.edu.domain.file.vo.FileVO">
+        <selectKey keyProperty="flId"
+                   resultType="string"
+                   order="BEFORE">
+          SELECT 'FL-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_FL_PK.NEXTVAL, 6, '0')
+            FROM DUAL
+        </selectKey>   
+        
+        INSERT INTO FL
+        (FL_ID
+        , FL_GRP_ID
+        , FL_SZ
+        , FL_NM
+        , OBFSCTIN_FL_NM
+        , FL_PTH
+        , DWNLD_CNT
+        , FL_TYP
+        , CRT_DT
+	    , CRTR
+	    , UPDT_DT
+	    , MTTR)
+        VALUES
+        ( #{flId}
+        , #{flGrpId}
+        , #{flSz}
+        , #{flNm}
+        , #{obfsctinFlNm}
+        , #{flPth}
+        , 0 
+        , #{flTyp}
+        , SYSDATE
+	    , 'SYSTEM'
+	    , SYSDATE
+	    , 'SYSTEM')    
+    </insert>
+     <update id="updateDownloadCount"
+            parameterType="com.ktdsuniversity.edu.domain.file.vo.request.RequestDownloadVO">
+        UPDATE FL
+           SET DWNLD_CNT = DWNLD_CNT + 1
+         WHERE FL_ID = #{flId}
+           AND FL_GRP_ID = #{flGrpId}
+    </update>
+    <select id="selectFileVO"
+            parameterType="com.ktdsuniversity.edu.domain.file.vo.request.RequestDownloadVO"
+            resultType="com.ktdsuniversity.edu.domain.file.vo.FileVO">
+        SELECT FL_ID
+             , FL_GRP_ID
+             , FL_SZ
+             , FL_NM
+             , OBFSCTIN_FL_NM
+             , FL_PTH
+             , DWNLD_CNT
+             , FL_TYP
+          FROM FL
+         WHERE FL_ID = #{flId}
+           AND FL_GRP_ID =  #{flGrpId}
+    </select>
+    
+    <!-- 광고주가 등록한 사업자 등록증 파일 삭제 (UPDATE, DLT_YN = 'Y') -->
+    <update id="updateFilesAsDelete" parameterType="map">
+        UPDATE FL
+           SET DLT_YN = 'Y'
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE DLT_YN = 'N'
+        <if test="deleteFiles != null and !deleteFiles.isEmpty()">
+           AND FL_ID IN 
+        <foreach collection="deleteFiles" item="flId" open="(" separator="," close=")">
+           #{flId}
+        </foreach>
+        </if>
+    </update>
+    
+    <select id="selectFilesByGroupId" parameterType="string" resultType="com.ktdsuniversity.edu.domain.file.vo.FileVO">
+	    SELECT FL_ID as flId,
+	           FL_GRP_ID as flGrpId,
+	           FL_NM as flNm,
+	           FL_SZ as flSz,
+	           FL_PTH as flPth,
+	           FL_TYP as flTyp
+	    FROM FL
+	    WHERE FL_GRP_ID = #{flGrpId}
+	    AND DLT_YN = 'N'
+</select>
+    
+</mapper>

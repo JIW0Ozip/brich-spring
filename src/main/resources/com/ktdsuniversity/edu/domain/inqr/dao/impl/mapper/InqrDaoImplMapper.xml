@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.inqr.dao.impl.InqrDaoImpl">
+    <select id="selectInqrCategory"
+            resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+         SELECT CD_ID
+		      , CD_NM
+		   FROM CM_CD
+		  WHERE PRNT_CD_ID = '7000' 
+     </select>
+     
+     <insert id="insertInqr"
+             parameterType="com.ktdsuniversity.edu.domain.inqr.vo.request.RequestInqrCreateVO">
+         <selectKey keyProperty="inqrId" order="BEFORE" resultType="string">
+         SELECT 'INQR-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_INQR_PK.NEXTVAL, 6, 0)
+           FROM DUAL
+         </selectKey>
+         
+        INSERT INTO INQR
+	   	( INQR_ID
+	   	, INQR_USR_ID
+	   	, INQR_TITLE
+	   	, INQR_CN
+	   	, INQR_CTG
+	   	, INQR_FL_GRP_ID
+	   	, CRT_DT
+	   	, CRTR
+	   	, UPDT_DT
+	   	, MTTR)
+	   	VALUES
+	   	( #{inqrId}
+	   	, #{inqrUsrId}
+	   	, #{inqrTitle}
+	   	, #{inqrCn}
+	   	, #{inqrCtg}
+	   	, #{inqrFlGrpId}
+	   	, SYSDATE
+	   	, #{inqrUsrId}
+	   	, SYSDATE
+	   	, #{inqrUsrId})
+     </insert>
+     
+     <select id="selectMyInqrCount"
+             parameterType="com.ktdsuniversity.edu.domain.inqr.vo.InqrSearchVO"
+             resultType="_int">
+         SELECT COUNT(1)
+		   FROM INQR 
+		  WHERE INQR_USR_ID = #{inqrUsrId}
+      </select>
+      
+      <select id="selectMyInqrListWithPaging"
+              parameterType="com.ktdsuniversity.edu.domain.inqr.vo.InqrSearchVO"
+              resultType="com.ktdsuniversity.edu.domain.inqr.vo.InqrVO">
+          <include refid="Common.paginationHeader" />
+          SELECT INQR_ID 
+			   , CRT_DT 
+			   , INQR_TITLE 
+			   , ANSR_USR_ID 
+			FROM INQR
+		   WHERE INQR_USR_ID = #{inqrUsrId}
+		   ORDER BY CRT_DT DESC
+		  <include refid="Common.paginationFooter" />
+      </select>
+      
+      <select id="selectInqrDetailByInqrId"
+              parameterType="string"
+              resultType="com.ktdsuniversity.edu.domain.inqr.vo.response.ResponseInqrVO">
+          SELECT I.INQR_TITLE 
+			   , I.INQR_CN 
+			   , CC.CD_NM AS inqrCtgNm
+	           , I.ANSR_CN 
+			   , I.INQR_FL_GRP_ID 
+			   , I.ANSR_FL_GRP_ID 
+			FROM INQR I
+		   INNER JOIN CM_CD CC
+			  ON I.INQR_CTG = CC.CD_ID 
+		   WHERE I.INQR_ID = #{inqrId}
+      </select>
+      
+     
+</mapper>

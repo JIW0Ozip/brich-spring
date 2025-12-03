@@ -1,0 +1,329 @@
+@charset "UTF-8";
+
+.container {
+    padding: 40px;
+}
+
+a {
+    text-decoration: none;
+    color: #5A6ACF;
+}
+
+pre {
+    white-space: pre-wrap;
+    font-family: sans-serif;
+}
+
+.admin-title {
+    margin-top: 22px;
+    margin-left: 80px;
+    
+    font-size: 36px;
+    font-weight: 600;
+    color: #5A6ACF;
+}
+
+.detail-info {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* border-top: 2px solid #5A6ACF; */
+    /* border-bottom: 1px solid #d1d5db; */
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 300px 900px; 
+    /* border-bottom: 1px solid #e5e7eb; */
+    min-height: 50px;
+}
+
+.detail-row.section-separator-top {
+    /* border-top: 1px solid #e5e7eb; */
+}
+
+.last-row {
+    border-bottom: none;
+}
+
+.detail-key {
+    /* background-color: #f9fafb; */
+    font-weight: 600;
+    color: #374151;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    /* border-right: 1px solid #e5e7eb; */
+}
+
+.detail-value {
+    background-color: #ffffff;
+    color: #4b5563;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.campaign-list-row .detail-value {
+    justify-content: flex-start; 
+    flex-wrap: wrap;
+}
+
+.detail-value input[type="text"] {
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 300px;
+    transition: border-color 0.2s;
+}
+
+.detail-value input[readonly] {
+    background-color: #f3f4f6;
+    cursor: default;
+}
+
+.detail-value .blog-crtfctn-active-btn {
+    padding: 6px 12px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #5A6ACF;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.detail-value .blog-crtfctn-active-btn:hover {
+    background-color: #4354b3;
+}
+
+
+.detail-value .add-new-file-btn {
+    padding: 6px 12px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #5A6ACF;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.detail-value .add-new-file-btn:hover {
+    background-color: #4354b3;
+}
+
+.file-list-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.file-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.file-remove-btn {
+    margin-left: 8px;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding: 10px 0;
+}
+
+.penalty-options {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-group label {
+    font-size: 0.95rem;
+    color: #374151;
+    margin-left: 10px;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn {
+    background-color: #FF676A;
+    color: #ffffff;
+    margin-left: 15px; 
+    font-weight: 500;
+}
+
+.modify-btn { /* 수정 버튼 */
+    background-color: #7B61FF;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.reject-btn { /* 가입 반려 버튼 */
+    background-color: #FF676A;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.approve-btn { /* 가입 승인 버튼 */
+    background-color: #7B61FF;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.save-btn:hover { 
+	background-color: rgba(190, 59, 61);
+}
+
+.modify-btn:hover { 
+	background-color: rgba(81, 59, 190);
+}
+
+.reject-btn:hover { 
+	background-color: rgba(190, 59, 61);
+}
+
+.approve-btn:hover { 
+	background-color: rgba(81, 59, 190);
+}
+
+
+
+/* 문의 상세 부분 */
+
+.file-link {
+    margin-right: 15px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.answer-section {
+    margin-top: 30px;
+}
+
+.answer-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    padding-bottom: 10px;
+    /* border-bottom: 2px solid #5A6ACF; */
+}
+
+.ansr-y .ansr-content-wrap {
+    /* padding-bottom: 15px; */
+    padding-left: 15px;
+    /* border-bottom: 1px dashed #cccccc; */
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #222;
+    min-height: 80px;
+}
+
+.ansr-y .ansr-file-list {
+    margin-bottom: 10px;
+}
+
+.ansr-y .ansr-date-info {
+    font-size: 0.85rem;
+    color: #888;
+    text-align: right;
+}
+
+.ansr-input-wrap {
+    margin-bottom: 15px;
+}
+
+.ansr-area textarea {
+	font-family: inherit;
+    width: 100%;
+    min-height: 200px;
+    padding: 15px;
+    box-sizing: border-box; 
+    border: 1px solid #d9d5ec;
+    border-radius: 6px;
+    resize: vertical;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.ansr-area textarea:focus {
+    /* border-color: #5A6ACF; */
+}
+
+.ansr-bottom-bar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.add-new-file-btn {
+    background-color: #f7f9fc;
+    /* color: #5A6ACF; */
+    /* border: 1px solid #5A6ACF; */
+    border: 1px solid #d9d5ec;
+    padding: 6px 15px;
+    /* border-radius: 20px; */
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.add-new-file-btn:hover {
+    background-color: #eef1f9;
+}
+
+.button-area {
+    margin-left: 1140px;
+}
+
+.ansr-save-btn {
+	width: 60px;
+	height: 40px;
+	background-color: #7B61FF;
+	font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+}
+
+.ansr-save-btn:hover {
+	background-color: rgba(81, 59, 190);
+}

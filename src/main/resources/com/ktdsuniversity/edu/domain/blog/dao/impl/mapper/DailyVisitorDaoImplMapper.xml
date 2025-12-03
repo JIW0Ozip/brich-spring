@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.blog.dao.impl.DailyVisitorDaoImpl">
+
+    <select id="selectDailyVisitor" parameterType="string" resultType="com.ktdsuniversity.edu.domain.blog.vo.DailyVisitorVO">
+
+        SELECT TO_CHAR(TRUNC(r.VST_DT), 'MM-DD') AS vstDt
+             , NVL(SUM(d.VSTR_CNT), 0) AS vstrCnt
+          FROM ( SELECT TRUNC(SYSDATE) - LEVEL + 1 AS VST_DT
+                   FROM DUAL
+      <![CDATA[ CONNECT BY LEVEL <= 14 ]]>
+                ) r
+          LEFT JOIN DLY_VSTR d
+            ON d.VST_DT BETWEEN r.VST_DT AND r.VST_DT
+           AND d.USR_ID = #{_parameter}
+           AND d.DLT_YN = 'N'
+         GROUP BY r.VST_DT
+         ORDER BY r.VST_DT
+
+    </select>
+
+    <select id="selectTotalVisitor"  parameterType="string" resultType="int">
+    SELECT NVL(TTL_VSTR_CNT, 0)
+      FROM TEAM_A.USR
+     WHERE NVL(DLT_YN, 'N') = 'N'
+       AND USR_ID = #{_parameter}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,198 @@
+.header-title{
+    min-width: 100px;
+    height:75px;
+    line-height: 100px;
+    margin-left: 75px;
+    font-size: 36px;
+    font-weight: 700;
+    color: #5A6ACF;
+}
+
+.dataTables_wrapper{
+	margin: 0 auto;
+}
+
+.manage-container{
+	display: flex;
+    flex-direction: column;
+    flex-grow:1;
+}
+
+table.dataTable th,
+table.dataTable td {
+  white-space: nowrap;
+}
+.dataTables_wrapper .dataTables_paginate {
+  text-align: center !important;
+  float: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: #7B61FF;
+  color: white !important;
+  border-radius: 6px;
+  margin: 0 4px;
+  padding: 6px 12px;
+  border: none !important;
+}
+
+.right-align{
+	text-align: right;
+}	
+
+/* 헤더 배경색, 글자색 */
+table.dataTable thead th {
+  background-color: #F4F2FF;  /* 보라색 배경 */
+  color: #5A6ACF;              /* 흰색 글씨 */
+  font-weight: bold;           /* 굵은 글씨 */
+  text-align: center;          /* 가운데 정렬 */
+}
+
+h3{
+	width: 100%;
+}
+
+/* 정렬 가능한 헤더에 화살표 아이콘 스타일 변경 */
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after {
+  font-family: 'FontAwesome';  /* 예: FontAwesome 아이콘 사용 */
+  content: "\f0dc";            /* 예시 아이콘 코드 (화살표) */
+  margin-left: 8px;
+  color: #ffffff;
+}
+
+.status {
+  display: inline-block;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+}
+
+.status-pending {
+  color: #666;
+  background-color: #f1f1f1;
+}
+
+.table-container{
+	box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+	padding: 45px 0 20px;
+	border-radius: 10px;
+	width: 100%;
+	max-width: 1200px;  /* ✅ 테이블이 이 이상 커지지 않음 */
+	overflow-x: auto;   /* ✅ 좁은 화면에서는 스크롤 생김 */
+	margin: 0 auto;
+	margin-bottom: 20px;
+}
+.info-container{
+	box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+	padding: 20px 0 20px;
+	border-radius: 10px;
+	width: 100%;
+	max-width: 1200px;  /* ✅ 테이블이 이 이상 커지지 않음 */
+	overflow-x: auto;   /* ✅ 좁은 화면에서는 스크롤 생김 */
+	margin: 20px auto;
+}
+
+.info-box{
+	padding: 20px;
+	margin: 20px;
+}
+.status-review {
+  color: #AEB47E;
+  background-color: #FFFAC7;
+}
+
+.status-rejected {
+  color: #ff4c4c;
+  background-color: #ffe5e5;
+}
+
+.status-approved {
+  color: #2e8b57;
+  background-color: #e3f9e5;
+}
+
+.status-unknown {
+  color: #999;
+  background-color: #f2f2f2;
+}
+/* 모달 배경 */
+.modal {
+    display: none; /* 기본 비활성 */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* 모달 내부 박스 */
+.modal-content {
+    background-color: #fff;
+    margin: 12% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 700px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.blog-info{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.btn-reason{
+	background-color: #5A48D8;
+	color: #fff;
+	border-radius: 15px;
+	border: 0;
+	font-weight: 500;
+	padding: 5px 10px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  border: 1px solid #ddd;
+  color: #555;
+  padding: 6px 12px;
+  margin: 0 2px;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.center{
+	text-align: center;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background-color: #7B61FF;
+  color: #fff !important;
+  border-color: #7B61FF;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:active {
+  background-color: #5A48D8;
+  color: #fff !important;
+  transform: scale(0.96);
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background-color: #5A6ACF;
+  color: #fff !important;
+  border: 1px solid #5A6ACF;
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  color: #aaa !important;
+  border-color: #eee;
+  background-color: #fafafa;
+  cursor: default;
+}

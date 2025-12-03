@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.chat.dao.impl.ChatDaoImpl">
+   <!-- 사용자가 참여 중인 채팅방 목록 조회 (페이징) -->
+    <select id="selectUserChatRooms" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="com.ktdsuniversity.edu.domain.chat.vo.response.ResponseChatRoomInfoVO">
+        <include refid="Common.paginationHeader" />
+            SELECT CR.CHT_RM_ID AS chtRmId
+                 , C.CMPN_TITLE AS cmpnTitle
+                 ,  C.CMPN_ID AS cmpnId
+                 ,  C.STTS_CD AS sttsCd
+                 ,  CD.CD_NM AS cdNm
+                 ,  (SELECT U.NM 
+                    FROM CHT_PRTCPNT CP2
+                    INNER JOIN USR U ON CP2.USR_ID = U.USR_ID
+                    WHERE CP2.CHT_RM_ID = CR.CHT_RM_ID
+                      AND CP2.USR_ID != #{usrId}
+                      AND CP2.LFT_YN = 'N'
+                      AND ROWNUM = 1) AS nm
+                 ,  (SELECT U.USR_ID 
+                     FROM CHT_PRTCPNT CP2
+                    INNER JOIN USR U ON CP2.USR_ID = U.USR_ID
+                    WHERE CP2.CHT_RM_ID = CR.CHT_RM_ID
+                      AND CP2.USR_ID != #{usrId}
+                      AND CP2.LFT_YN = 'N'
+                      AND ROWNUM = 1) AS targetId
+              FROM CHT_PRTCPNT CP
+             INNER JOIN CHT_RM CR ON CP.CHT_RM_ID = CR.CHT_RM_ID
+             INNER JOIN CMPN C ON CR.CMPN_ID = C.CMPN_ID
+             INNER JOIN CM_CD CD ON CD.CD_ID = C.STTS_CD
+             WHERE CP.USR_ID = #{usrId}
+               AND CP.LFT_YN = 'N'
+               AND C.STTS_CD IN ('2007', '2009')
+             ORDER BY CR.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+    
+    <select id="selectUserChatRoomsCount" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="int">
+        SELECT COUNT(CHT_RM_ID)
+          FROM CHT_PRTCPNT
+         WHERE USR_ID = #{usrId}
+           AND LFT_YN = 'N'
+    </select>
+
+    <!-- 캠페인별 채팅방 총 개수 조회 -->
+    <select id="selectCampaignChatRoomsCount"
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO"
+            resultType="int">
+        SELECT COUNT(CR.CHT_RM_ID)
+          FROM CHT_RM CR
+         INNER JOIN CHT_PRTCPNT CP
+            ON CR.CHT_RM_ID = CP.CHT_RM_ID
+         WHERE CR.CMPN_ID = #{cmpnId}
+           AND CR.DLT_YN = 'N'
+           AND CP.LFT_YN = 'N'
+           AND CP.USR_ID = #{usrId} 
+    </select>
+
+    <!-- 캠페인별 채팅방 목록 조회 (페이징) -->
+    <select id="selectCampaignChatRooms"
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO"
+            resultType="com.ktdsuniversity.edu.domain.chat.vo.response.ResponseChatRoomInfoVO">
+        <include refid="Common.paginationHeader" />
+            SELECT CR.CHT_RM_ID AS chtRmId
+                 , C.CMPN_TITLE AS cmpnTitle
+                 , C.CMPN_ID AS cmpnId
+                 , C.STTS_CD AS sttsCd
+                 , CD.CD_NM AS cdNm
+                 , U.NM AS nm
+                 , U.LOG_ID AS logId
+                 , CP2.USR_ID AS targetId
+              FROM CHT_RM CR
+             INNER JOIN CMPN C 
+                ON CR.CMPN_ID = C.CMPN_ID
+             INNER JOIN CM_CD CD 
+                ON CD.CD_ID = C.STTS_CD
+             INNER JOIN CHT_PRTCPNT CP
+                ON CP.USR_ID = #{usrId}
+               AND CP.CHT_RM_ID = CR.CHT_RM_ID
+              LEFT JOIN CHT_PRTCPNT CP2 
+                ON CP2.CHT_RM_ID = CR.CHT_RM_ID
+               AND CP2.USR_ID != #{usrId}
+              LEFT JOIN USR U 
+                ON CP2.USR_ID = U.USR_ID
+             WHERE CR.CMPN_ID = #{cmpnId}
+               AND CR.DLT_YN = 'N'   
+               AND CP.LFT_YN = 'N'      
+             ORDER BY CR.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+
+    <!-- 광고주용 캠페인 총 개수 조회 (진행중, 종료 중) -->
+    <select id="selectAllCampaignListCount" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="int">
+        SELECT COUNT(*)
+        FROM CMPN C
+        WHERE C.USR_ID = #{usrId}
+          AND C.DLT_YN = 'N'
+          AND C.STTS_CD IN ('2007', '2009')
+    </select>
+
+    <!-- 광고주용 채팅방 캠페인 목록 전체 (페이징) 진행중 종료 중-->
+    <select id="selectAllCampaignList" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="com.ktdsuniversity.edu.domain.chat.vo.response.ResponseChatCampaignListVO">
+        <include refid="Common.paginationHeader" />
+            SELECT C.CMPN_TITLE AS cmpnTitle
+                 , C.CMPN_ID AS cmpnId
+                 , C.STTS_CD AS sttsCd
+                 , CD.CD_NM AS cdNm
+              FROM CMPN C
+             INNER JOIN CM_CD CD 
+                ON CD.CD_ID = C.STTS_CD 
+             WHERE C.USR_ID = #{usrId}
+               AND C.DLT_YN = 'N'
+               AND C.STTS_CD IN ('2007', '2009')
+             ORDER BY C.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+
+    <!-- 광고주용 캠페인 총 개수 조회 (종료) -->
+    <select id="selectEndedCampaignListCount" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="int">
+        SELECT COUNT(*)
+        FROM CMPN C
+        WHERE C.USR_ID = #{usrId}
+          AND C.DLT_YN = 'N'
+          AND C.STTS_CD = '2009'
+    </select>
+
+    <!-- 광고주용 채팅방 캠페인 목록 종료 (페이징) -->
+    <select id="selectEndedCampaignList" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="com.ktdsuniversity.edu.domain.chat.vo.response.ResponseChatCampaignListVO">
+        <include refid="Common.paginationHeader" />
+            SELECT C.CMPN_TITLE AS cmpnTitle
+                 , C.CMPN_ID AS cmpnId
+                 , C.STTS_CD AS sttsCd
+                 , CD.CD_NM AS cdNm
+              FROM CMPN C
+             INNER JOIN CM_CD CD 
+                ON CD.CD_ID = C.STTS_CD 
+             WHERE C.USR_ID = #{usrId}
+               AND C.DLT_YN = 'N'
+               AND C.STTS_CD = '2009'
+             ORDER BY C.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+
+    <!-- 광고주용 캠페인 총 개수 조회 (진행중) -->
+    <select id="selectOngoingCampaignListCount" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="int">
+        SELECT COUNT(*)
+        FROM CMPN C
+        WHERE C.USR_ID = #{usrId}
+          AND C.DLT_YN = 'N'
+          AND C.STTS_CD IN('2007')
+    </select>
+
+    <!-- 광고주용 채팅방 캠페인 목록 진행중 (페이징) -->
+    <select id="selectOngoingCampaignList" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.SearchChatVO" 
+            resultType="com.ktdsuniversity.edu.domain.chat.vo.response.ResponseChatCampaignListVO">
+        <include refid="Common.paginationHeader" />
+            SELECT C.CMPN_TITLE AS cmpnTitle
+                 , C.CMPN_ID AS cmpnId
+                 , C.STTS_CD AS sttsCd
+                 , CD.CD_NM AS cdNm
+              FROM CMPN C
+             INNER JOIN CM_CD CD 
+                ON CD.CD_ID = C.STTS_CD 
+             WHERE C.USR_ID = #{usrId}
+               AND C.STTS_CD IN('2007')
+               AND C.DLT_YN = 'N'
+             ORDER BY C.CRT_DT DESC
+        <include refid="Common.paginationFooter" />
+    </select>
+
+    <!-- 채팅방 나가기 -->
+    <update id="updateChatRoomLeave" 
+            parameterType="com.ktdsuniversity.edu.domain.chat.vo.ChatParticipantVO">
+        UPDATE CHT_PRTCPNT
+           SET LFT_YN = 'Y',
+               UPDT_DT = SYSDATE,
+               MTTR = #{usrId}
+         WHERE USR_ID = #{usrId}
+           AND CHT_RM_ID = #{chtRmId}
+    </update>
+
+    <!-- 사용자 이름 조회 -->
+    <select id="selectUserName" 
+            parameterType="string" 
+            resultType="string">
+        SELECT NM
+          FROM USR
+         WHERE USR_ID = #{usrId}
+    </select>
+    
+    <select id="selectCampaignByChtRmId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.domain.campaign.vo.CampaignVO">
+        SELECT C.CMPN_ID
+             , C.CMPN_TITLE
+          FROM CHT_RM CR
+         INNER JOIN CMPN C 
+            ON CR.CMPN_ID = C.CMPN_ID 
+         WHERE CR.CHT_RM_ID = #{chtRmId}
+    </select>
+    
+    <select id="selectTargetUsrIdByChtRmIdAndUsrId"
+            parameterType="hashmap"
+            resultType="string">
+        SELECT USR_ID
+          FROM CHT_PRTCPNT
+         WHERE CHT_RM_ID = #{chtRmId}
+           AND USR_ID != #{currentUsrId}
+    </select>
+    
+    <select id="selectChtRmIdListByCmpnId"
+            parameterType="hashmap"
+            resultType="string">
+        SELECT CHT_RM_ID
+          FROM CHT_RM
+         WHERE CMPN_ID = #{cmpnId}
+           AND DLT_YN = 'N'
+    </select>
+     <select id="selectChtRmIdListByUsrId"
+            parameterType="hashmap"
+            resultType="string">
+        SELECT CHT_RM_ID
+          FROM CHT_PRTCPNT
+         WHERE USR_ID = #{usrId}
+           AND LFT_YN = 'N'
+    </select> 
+     
+</mapper>

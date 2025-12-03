@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.user.dao.impl.BlogCategoryDaoImpl">
+    <insert id="insertBlogCategory"
+            parameterType="com.ktdsuniversity.edu.domain.user.vo.BlogCategoryVO">
+        INSERT INTO BLG_CTG
+		(USR_ID
+		, CD_ID
+		, CRT_DT
+		, CRTR
+		, UPDT_DT
+		, MTTR)
+		VALUES
+		(#{usrId}
+		, #{cdId}
+		, SYSDATE
+		, #{usrId}
+		, SYSDATE
+		, #{usrId})
+    </insert>
+    
+    <select id="selectUserBlogCategoryById" parameterType="string" resultType="com.ktdsuniversity.edu.domain.user.vo.BlogCategoryVO">
+        SELECT USR_ID
+             , CD_ID
+             , CRT_DT
+             , CRTR
+             , UPDT_DT
+             , MTTR
+             , DLT_YN
+          FROM BLG_CTG
+         WHERE DLT_YN = 'N'
+           AND USR_ID = #{_parameter}
+    </select>
+    
+    <!-- 블로거의 블로그 카테고리 삭제 (비활성화) -->
+    <update id="updateBlogCategoryAsDelete" parameterType="map">
+        UPDATE BLG_CTG
+           SET DLT_YN = 'Y'
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'N'
+       <if test="deleteList != null and !deleteList.isEmpty()">
+           AND CD_ID IN 
+       <foreach collection="deleteList" item="cdId" open="(" separator="," close=")">
+           #{cdId}
+       </foreach>
+       </if> 
+    </update>
+    
+    <!-- 블로거의 삭제(비활성화)된 카테고리 찾기 -->
+    <select id="selectDeletedCategoryById" parameterType="map" resultType="string">
+        SELECT CD_ID
+          FROM BLG_CTG
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'Y'
+       <if test="searchList != null and !searchList.isEmpty()">
+           AND CD_ID IN
+       <foreach collection="searchList" item="cdId" open="(" separator="," close=")">
+           #{cdId}
+       </foreach>
+       </if>
+    </select>
+    
+    <!-- 블로거의 삭제(비활성화)된 카테고리 다시 추가(활성화)하기 -->
+    <update id="updateCategoryAsReactive" parameterType="map">
+        UPDATE BLG_CTG
+           SET DLT_YN = 'N'
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'Y'
+        <if test="reactiveList != null and !reactiveList.isEmpty()">
+           AND CD_ID IN 
+        <foreach collection="reactiveList" item="cdId" open="(" separator="," close=")">
+           #{cdId}
+        </foreach>
+        </if>
+    </update>
+    
+    <!-- 블로거의 새 블로그 카테고리 추가 -->
+    <insert id="insertNewBlogCategory" parameterType="map">
+        INSERT INTO BLG_CTG (USR_ID
+                           , CD_ID
+                           , CRT_DT
+                           , CRTR
+                           , UPDT_DT
+                           , MTTR
+                           , DLT_YN)
+                     SELECT #{usrId} AS USR_ID
+                          , #{insertId} AS CD_ID
+                          , SYSDATE AS CRT_DT
+                          , #{adminId} AS CRTR
+                          , SYSDATE AS UPDT_DT
+                          , #{adminId} AS MTTR
+                          , 'N' AS DLT_YN
+                      FROM DUAL
+                     WHERE NOT EXISTS (SELECT 1
+                                         FROM BLG_CTG
+                                        WHERE USR_ID = #{usrId}
+                                          AND CD_ID = #{insertId}
+                                          AND DLT_YN = 'N')
+    </insert>
+    
+    <select id="selectUserCategoryByUserId"
+            parameterType="string"
+            resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+        SELECT CC.CD_ID
+             , CC.CD_NM
+          FROM BLG_CTG BC
+         INNER JOIN CM_CD CC
+            ON BC.CD_ID = CC.CD_ID
+        WHERE BC.USR_ID = #{usrId} 
+          AND BC.DLT_YN = 'N'
+    </select>
+    
+    <update id="updateDltYnByUsrId"
+            parameterType="string">
+        UPDATE BLG_CTG
+           SET DLT_YN = 'Y'
+         WHERE USR_ID = #{usrId}
+     </update>
+     
+     <insert id="mergeBlogCategory"
+             parameterType="com.ktdsuniversity.edu.domain.user.vo.BlogCategoryVO">
+	     MERGE INTO BLG_CTG T
+	     USING (
+	         SELECT #{usrId} AS USR_ID
+	              , #{cdId} AS CD_ID
+	         FROM DUAL
+	     ) S
+	         ON (T.USR_ID = S.USR_ID AND T.CD_ID = S.CD_ID)
+	       WHEN MATCHED THEN
+	         UPDATE SET 
+	             DLT_YN = 'N'
+	           , UPDT_DT = SYSDATE
+	           , MTTR = #{usrId}
+	       WHEN NOT MATCHED THEN
+	         INSERT (USR_ID, CD_ID, CRT_DT, CRTR, UPDT_DT, MTTR, DLT_YN)
+	         VALUES (#{usrId}, #{cdId}, SYSDATE, #{usrId}, SYSDATE, #{usrId}, 'N')
+</insert>
+    
+</mapper>

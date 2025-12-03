@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.inqr.dao.impl.AdminInqrDaoImpl">
+    
+    <!-- 문의 관리 - 목록 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.inqr.vo.AdminInqrListVO" id="AdminInqrListVOMap" autoMapping="true">
+        <id column="INQR_ID" property="inqrId" />
+        <result column="ANSR_YN" property="ansrYn" />
+        <result column="ANSR_DT" property="ansrDt" />
+    </resultMap>
+    <select id="selectAdminInqrList" resultMap="AdminInqrListVOMap">
+        SELECT I.INQR_ID 
+             , U.LOG_ID
+             , CASE 
+                   WHEN I.ANSR_USR_ID IS NULL
+                   THEN '-'
+                   ELSE I.ANSR_USR_ID
+                END AS ANSR_USR_ID
+             , I.INQR_TITLE
+             , C.CD_ID
+             , C.CD_NM
+             , CASE 
+                   WHEN I.ANSR_CN IS NOT NULL 
+                    AND I.ANSR_USR_ID IS NOT NULL 
+                   THEN 'Y'
+                   ELSE 'N'
+                END AS ANSR_YN
+             , I.CRT_DT
+             , CASE 
+                   WHEN I.ANSR_CN IS NOT NULL 
+                    AND I.ANSR_USR_ID IS NOT NULL
+                   THEN TO_CHAR(I.UPDT_DT, 'YYYY-MM-DD HH24:MI:SS')
+               ELSE '-'
+             END AS ANSR_DT
+             , I.INQR_FL_GRP_ID
+          FROM INQR I
+          LEFT OUTER JOIN USR U
+            ON U.USR_ID = I.INQR_USR_ID
+          LEFT OUTER JOIN CM_CD C
+            ON C.CD_ID = I.INQR_CTG
+         WHERE I.DLT_YN = 'N'
+         ORDER BY 
+          CASE 
+              WHEN I.ANSR_CN IS NOT NULL 
+               AND I.ANSR_USR_ID IS NOT NULL
+              THEN 1
+              ELSE 0
+          END ASC
+            , I.CRT_DT ASC
+            , I.UPDT_DT ASC
+    </select>
+    
+    <resultMap type="com.ktdsuniversity.edu.domain.inqr.vo.AdminInqrDetailVO" id="AdminInqrDetailVOMap" autoMapping="true">
+        <result column="ANSR_YN" property="ansrYn"/>
+        <result column="ANSR_DT" property="ansrDt"/>
+        <result column="LOG_ID" property="logId"/>
+        <result column="NM" property="nm"/>
+        <result column="CD_ID" property="cdId"/>
+        <result column="CD_NM" property="cdNm"/>
+        
+        <association javaType="com.ktdsuniversity.edu.domain.inqr.vo.InqrVO" property="inqrVO" autoMapping="true">
+            <id column="INQR_ID" property="inqrId"/>
+        </association>
+        
+        <collection javaType="list" ofType="com.ktdsuniversity.edu.domain.file.vo.FileVO" property="inqrFileList" autoMapping="true">
+            <id column="INQR_FL_ID" property="flId"/>
+            <result column="INQR_FL_NM" property="flNm"/>
+        </collection>
+        
+        <collection javaType="list" ofType="com.ktdsuniversity.edu.domain.file.vo.FileVO" property="ansrFileList" autoMapping="true">
+            <id column="ANSR_FL_ID" property="flId"/>
+            <result column="ANSR_FL_NM" property="flNm"/>
+        </collection>
+    </resultMap>
+    <!-- 문의 관리 - 상세 정보 -->
+    <select id="selectAdminInqrDetailByInqrId" parameterType="string" resultMap="AdminInqrDetailVOMap">
+        SELECT I.INQR_ID
+             , I.INQR_USR_ID 
+             , I.INQR_TITLE
+             , I.INQR_CTG 
+             , I.INQR_CN
+             , I.CRT_DT
+             , I.ANSR_CN
+             , I.CRTR
+             , I.UPDT_DT
+             , I.MTTR
+             , I.DLT_YN
+             , CASE 
+                   WHEN I.ANSR_CN IS NOT NULL 
+                    AND I.ANSR_USR_ID IS NOT NULL 
+                   THEN'Y'
+                   ELSE 'N'
+                END AS ANSR_YN
+             , CASE 
+                   WHEN I.ANSR_CN IS NOT NULL 
+                    AND I.ANSR_USR_ID IS NOT NULL
+                   THEN TO_CHAR(I.UPDT_DT, 'YYYY-MM-DD HH24:MI:SS')
+                   ELSE '-'
+                END AS ANSR_DT
+             , CASE 
+                   WHEN I.ANSR_USR_ID IS NULL
+                   THEN '-'
+                   ELSE I.ANSR_USR_ID
+                END AS ANSR_USR_ID
+             , U.LOG_ID
+             , C.CD_ID 
+             , C.CD_NM
+             , I.INQR_FL_GRP_ID
+             , F_INQR.FL_ID AS INQR_FL_ID
+             , F_INQR.FL_NM AS INQR_FL_NM
+             , F_INQR.FL_SZ AS INQR_FL_SZ
+             , F_INQR.FL_TYP AS INQR_FL_TYP
+             , F_INQR.FL_PTH AS INQR_FL_PTH
+             , F_INQR.OBFSCTIN_FL_NM AS INQR_OBFSCTIN_FL_NM
+             , I.ANSR_FL_GRP_ID
+             , F_ANSR.FL_ID AS ANSR_FL_ID
+             , F_ANSR.FL_NM AS ANSR_FL_NM
+             , F_ANSR.FL_SZ AS ANSR_FL_SZ
+             , F_ANSR.FL_TYP AS ANSR_FL_TYP
+             , F_ANSR.FL_PTH AS ANSR_FL_PTH
+             , F_ANSR.OBFSCTIN_FL_NM AS ANSR_OBFSCTIN_FL_NM
+          FROM INQR I
+          LEFT OUTER JOIN USR U
+            ON U.USR_ID = I.INQR_USR_ID
+          LEFT OUTER JOIN CM_CD C
+            ON C.CD_ID = I.INQR_CTG
+          LEFT OUTER JOIN FL F_INQR
+            ON F_INQR.FL_GRP_ID = I.INQR_FL_GRP_ID 
+           AND F_INQR.DLT_YN = 'N'
+          LEFT OUTER JOIN FL F_ANSR
+            ON F_ANSR.FL_GRP_ID = I.ANSR_FL_GRP_ID 
+           AND F_ANSR.DLT_YN = 'N'
+         WHERE I.DLT_YN = 'N'
+           AND I.INQR_ID = #{_parameter}
+         ORDER BY F_INQR.CRT_DT ASC
+                , F_ANSR.CRT_DT ASC
+    </select>
+    
+    <!-- 문의 관리 - 답변 등록 -->
+    <update id="updateInqrToAnswer" parameterType="com.ktdsuniversity.edu.domain.inqr.vo.AdminAnsrRegistVO">
+        UPDATE INQR 
+           SET ANSR_CN = #{ansrCn}
+             , ANSR_FL_GRP_ID = #{ansrFlGrpId}
+             , ANSR_USR_ID = #{ansrUsrId}
+             , UPDT_DT = SYSDATE
+             , MTTR = #{ansrUsrId}
+         WHERE INQR_ID = #{inqrId}
+           AND DLT_YN = 'N'
+    </update>
+    
+</mapper>

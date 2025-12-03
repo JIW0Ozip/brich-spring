@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.faq.dao.impl.FaqDaoImpl">
+    <select id="selectFaqCategory"
+            resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+        SELECT CD_NM 
+		     , CD_ID 
+		  FROM CM_CD
+		 WHERE PRNT_CD_ID = 'C000'
+     </select>
+     
+     <select id="selectFaqList"
+             resultType="com.ktdsuniversity.edu.domain.faq.vo.FaqVO">
+		 SELECT FAQ_ID
+		      , FAQ_TITLE
+		      , FAQ_CN
+		   FROM FAQ
+		  <if test="category != null and category != ''">
+		      WHERE CTG_CD = #{category}
+		  </if> 
+     </select>
+</mapper>

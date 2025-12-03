@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.report.dao.impl.PenaltyHistoryDaoImpl">
+    
+    <!-- 경고 페널티 -->
+    <insert id="insertPenaltyHistoryInWarning" parameterType="com.ktdsuniversity.edu.domain.report.vo.AdminPenaltyRequestVO">
+	    <selectKey keyColumn="PNLT_ID" keyProperty="pnltId" order="BEFORE" resultType="string">
+	        SELECT 'PNLT-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_PNLT_HIST_PK.NEXTVAL, 6, '0')
+	              FROM DUAL
+	    </selectKey>
+        INSERT INTO PNLT_HIST (PNLT_ID
+                             , RPT_ID
+                             , PNLT_USR_ID
+                             , START_DT
+                             , END_DT
+                             , EXPRS_YN
+                             , PRCN_USR_ID
+                             , CRT_DT
+                             , CRTR
+                             , UPDT_DT
+                             , MTTR
+                             , DLT_YN)
+                       VALUES (#{pnltId}
+                             <if test="usrId == '' or usrId == null">
+                             , #{rptId}
+                             , #{rptedUsrId}
+                             </if>
+                             <if test="rptedUsrId == '' or rptedUsrId == null">
+                             , '[직접 징계]'
+                             , #{usrId}
+                             </if>
+                             , SYSDATE
+                             , ADD_MONTHS(SYSDATE,  1)
+                             , 'N'
+                             , #{adminId}
+                             , SYSDATE
+                             , #{adminId}
+                             , SYSDATE
+                             , #{adminId}
+                             , 'N')
+    </insert>
+    
+    <!-- 영구 정지 페널티 -->
+    <insert id="insertPenaltyHistoryInBan" parameterType="com.ktdsuniversity.edu.domain.report.vo.AdminPenaltyRequestVO">
+        <selectKey keyColumn="PNLT_ID" keyProperty="pnltId" order="BEFORE" resultType="string">
+            SELECT 'PNLT-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_PNLT_HIST_PK.NEXTVAL, 6, '0')
+                  FROM DUAL
+        </selectKey>
+        INSERT INTO PNLT_HIST (PNLT_ID
+                             , RPT_ID
+                             , PNLT_USR_ID
+                             , START_DT
+                             , END_DT
+                             , EXPRS_YN
+                             , PRCN_USR_ID
+                             , CRT_DT
+                             , CRTR
+                             , UPDT_DT
+                             , MTTR
+                             , DLT_YN)
+                       VALUES (#{pnltId}
+                             <if test="usrId == '' or usrId == null">
+                             , #{rptId}
+                             , #{rptedUsrId}
+                             </if>
+                             <if test="rptedUsrId == '' or rptedUsrId == null">
+                             , '[직접 징계]'
+                             , #{usrId}
+                             </if>
+                             , SYSDATE
+                             , TO_DATE('9999-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+                             , 'N'
+                             , #{adminId}
+                             , SYSDATE
+                             , #{adminId}
+                             , SYSDATE
+                             , #{adminId}
+                             , 'N')
+    </insert>
+    
+    <!-- 징계 누적 횟수 3회 이상으로, 영구 정지 처리될 경우 기존 징계 데이터 UPDATE -->
+    <update id="updateHistoryBanToPenaltyCount" parameterType="com.ktdsuniversity.edu.domain.report.vo.AdminPenaltyRequestVO">
+        UPDATE PNLT_HIST
+           SET END_DT = TO_DATE('9999-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE RPT_ID = #{rptId}
+           AND DLT_YN = 'N'
+    </update>
+    
+</mapper>

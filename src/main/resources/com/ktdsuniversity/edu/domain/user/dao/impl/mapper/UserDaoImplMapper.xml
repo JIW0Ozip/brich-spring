@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.user.dao.impl.UserDaoImpl">
+    <select parameterType="com.ktdsuniversity.edu.domain.user.vo.request.RequestUserLoginVO"
+            resultType="com.ktdsuniversity.edu.domain.user.vo.UserVO"
+            id="selectUserByLogIdAndAutr">
+        SELECT USR_ID
+             , LOG_ID
+             , EML
+             , PSWRD
+             , NM
+             , SALT
+             , LGN_PL_CNT
+             , BLCK_YN
+             , RCNT_LGN_BLCK_DT
+             , RCNT_LGN_FL_DT
+             , RCNT_LGN_SCS_DT
+             , AUTR
+             , SBSCRPTN_EXPRS_DT
+             , PNLT_CNT
+             , RCNT_BLG_CRTFCTN_DT
+             , BLG_ADDRS
+             , CRTFD_ADMIN
+             , TTL_VSTR_CNT
+             , AVRG_VSTR_CNT
+             , BLG_NGHBR_CNT
+             , SCRP_CNT
+             , CMPNY
+             , CRT_DT
+             , CRTR
+             , UPDT_DT
+             , MTTR
+             , DLT_YN
+             , BLG_TITLE
+         FROM USR
+        WHERE LOG_ID = #{logId}
+          AND AUTR IN('1001', '1002', '1003', '1004', '1007')
+    </select>
+    <insert parameterType="com.ktdsuniversity.edu.domain.user.vo.request.RequestUserRegistVO"
+            id="insertNewUser">
+        <selectKey keyProperty="usrId" order="BEFORE" resultType="string">
+         SELECT 'USR-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_USR_PK.NEXTVAL, 6, 0)
+           FROM DUAL
+      </selectKey>
+        INSERT INTO USR 
+        (USR_ID
+        , LOG_ID
+        , EML
+        , PSWRD
+        , NM
+        , SALT
+        , AUTR
+        , CMPNY
+        , FL_GRP_ID
+        , CRT_DT
+        , CRTR
+        , UPDT_DT
+        , MTTR
+        )
+        VALUES 
+        ( #{usrId}
+        , #{logId}
+        , #{eml}
+        , #{pswrd}
+        , #{nm}
+        , #{salt}
+        , #{autr}
+        , #{cmpny}
+        , #{flGrpId}
+        , SYSDATE
+        , #{usrId}
+        , SYSDATE
+        , #{usrId}
+        )
+    </insert>
+    
+    <select parameterType="string"
+            resultType="_int"
+            id="selectUserCountByLogId">
+        SELECT COUNT(USR_ID)
+          FROM USR 
+         WHERE LOG_ID = #{logId}    
+    </select>
+    
+    <select id="selectUnblockUserByLogId"
+            parameterType="string"
+            resultType="_int">
+        SELECT COUNT(USR_ID)
+          FROM USR
+		 WHERE LOG_ID = #{_parameter}
+		   AND BLCK_YN = 'Y'
+		   AND RCNT_LGN_BLCK_DT <![CDATA[<=]]> SYSDATE - 1 / 24
+		   AND DLT_YN = 'N'  
+    </select>
+    
+    <update id="updateLoginFailCountByLogId"
+            parameterType="string">        
+		UPDATE USR 
+		   SET LGN_PL_CNT = LGN_PL_CNT + 1
+		      ,RCNT_LGN_FL_DT = SYSDATE
+		 WHERE LOG_ID = #{_parameter}
+    </update>
+    
+    <update id="updateBlockByLogid"
+            parameterType="string">
+        UPDATE USR
+		   SET BLCK_YN = 'Y'
+		     , RCNT_LGN_BLCK_DT = SYSDATE
+	     WHERE LOG_ID = #{_parameter}
+		   AND LGN_PL_CNT >= 5
+    </update>
+    
+    <update id="updateLoginSuccessByLogId"
+            parameterType="string">
+        UPDATE USR
+		   SET BLCK_YN = 'N'
+		     , LGN_PL_CNT = 0
+		     , RCNT_LGN_SCS_DT = SYSDATE
+		 WHERE LOG_ID = #{_parameter}
+    </update>
+    
+    <select parameterType="com.ktdsuniversity.edu.domain.user.vo.request.RequestUserFindIdVO"
+            resultType="string"
+            id="selectUserLogIdByNameAndEmail">
+        SELECT LOG_ID
+		  FROM USR 
+		 WHERE EML = #{eml}
+		   AND NM = #{nm}
+    </select>
+    
+    <update parameterType="com.ktdsuniversity.edu.domain.user.vo.request.RequestUserResetPasswordVO"
+            id="updatePswrdByLogIdAndPswrd">
+        UPDATE USR 
+		   SET PSWRD = #{pswrd}
+		     , SALT = #{salt}
+		 WHERE LOG_ID = #{logId}
+    </update>
+    
+    <select id="selectUserIdByLogId"
+            parameterType="string"
+            resultType="string">
+        SELECT USR_ID
+		  FROM USR 
+		 WHERE LOG_ID = #{logId}
+    </select>
+    
+    <update id="updateBlgAddrsById"
+    		parameterType="com.ktdsuniversity.edu.domain.blog.vo.RequestModifyBlogAddrsVO">
+	   UPDATE USR
+          SET BLG_ADDRS=#{blgAddrs}, UPDT_DT=SYSDATE, MTTR='SYSTEM'
+        WHERE USR_ID=#{id}
+	</update>
+	
+	    <select parameterType="string"
+            resultType="com.ktdsuniversity.edu.domain.user.vo.UserVO"
+            id="selectUserByLogId">
+        SELECT USR_ID
+             , LOG_ID
+             , EML
+             , PSWRD
+             , NM
+             , SALT
+             , LGN_PL_CNT
+             , BLCK_YN
+             , RCNT_LGN_BLCK_DT
+             , RCNT_LGN_FL_DT
+             , RCNT_LGN_SCS_DT
+             , AUTR
+             , SBSCRPTN_EXPRS_DT
+             , PNLT_CNT
+             , RCNT_BLG_CRTFCTN_DT
+             , BLG_ADDRS
+             , CRTFD_ADMIN
+             , TTL_VSTR_CNT
+             , AVRG_VSTR_CNT
+             , BLG_NGHBR_CNT
+             , SCRP_CNT
+             , CRT_DT
+             , CRTR
+             , UPDT_DT
+             , MTTR
+             , DLT_YN
+         FROM USR
+        WHERE LOG_ID = #{logId}
+          AND AUTR IN('1001', '1002', '1003', '1004')
+    </select>
+	<select id="selectUserByUserId"
+	        parameterType="string"
+	        resultType="com.ktdsuniversity.edu.domain.user.vo.UserVO">
+	    SELECT USR_ID
+	         , EML
+	         , NM
+	         , CMPNY
+	         , LOG_ID
+	         , AUTR
+	      FROM USR
+	     WHERE USR_ID = #{usrId}
+	</select>
+	
+	<select id="selectUserPswrdByPswrd"
+	        parameterType="map"
+	        resultType="string">
+	    SELECT PSWRD
+		  FROM USR 
+		 WHERE USR_ID = #{usrId}
+		   AND PSWRD = #{currentPassword}
+	</select>
+	
+	<update id="requestUserAccountPasswordVO"
+	        parameterType="com.ktdsuniversity.edu.domain.user.vo.request.RequestUserAccountPasswordVO">
+	    UPDATE USR 
+	       SET PSWRD = #{newPswrd}
+             , SALT = #{salt} 
+         WHERE USR_ID = #{usrId}      
+	</update>
+	
+	<select id="selectSaltByUsrId"
+	        parameterType="string">
+	    SELECT SALT
+	      FROM USR
+	     WHERE USR_ID = #{usrId}
+	 </select>
+	<update id="updateBlogScrapNeighbor"
+			parameterType="com.ktdsuniversity.edu.domain.blog.vo.RequestBlogInfoVO">
+	
+	UPDATE TEAM_A.USR
+	   SET TTL_VSTR_CNT= #{ttlVstrCnt}
+	     , BLG_NGHBR_CNT= #{blgNghbrCnt}
+	     , SCRP_CNT=#{scrpCnt}
+	 WHERE BLG_ADDRS = #{blgAddrs}
+	
+	</update>
+	
+	<update id="updateBlogTitle"
+			parameterType="com.ktdsuniversity.edu.domain.blog.vo.RequestBlogTitleVO">
+	
+	UPDATE TEAM_A.USR
+	   SET BLG_TITLE = #{blgTitle}
+	 WHERE BLG_ADDRS = #{blgAddrs}
+	
+	</update>
+	
+	<select id="selectEmailCountByInputEmail"
+	        resultType="int">
+	    SELECT COUNT(EML)
+	      FROM USR
+	     WHERE EML = #{email} 
+	</select>
+</mapper>

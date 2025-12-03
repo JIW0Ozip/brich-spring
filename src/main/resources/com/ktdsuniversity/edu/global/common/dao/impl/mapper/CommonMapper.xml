@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Common">
+  
+  <sql id="paginationHeader">
+    SELECT *
+      FROM (SELECT ROWNUM AS RNUM
+                 , S.*
+              FROM (
+  </sql>
+  <sql id="paginationFooter">
+                   ) S
+             WHERE ROWNUM <![CDATA[<=]]> (#{pageNo} + 1) * #{listSize})
+     WHERE RNUM >= #{pageNo} * #{listSize} + 1
+  </sql>
+</mapper>

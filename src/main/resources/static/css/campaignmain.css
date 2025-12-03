@@ -1,0 +1,595 @@
+.main {
+  width: 100vh;
+  flex-grow: 1;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    
+  }
+.cursor-pointer {  
+	cursor : pointer;
+}  
+.box-shadow {
+	box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+	border-radius : 10px;
+	padding : 20px 0 20px 40px;	
+}
+
+.campaign-fav{
+     position:absolute;
+     top:10px;
+     left:10px;
+}
+.campaign-fav1{
+     position:relative;
+     top:10px;
+     left:10px;
+}
+.campaign-payment-block {
+	margin-bottom: 30px;
+	.campaign-payment-title{
+		font-size: 24px;
+		text-decoration: underline;
+	}
+	.campaign-payment-content{
+		font-size: 20px;
+		padding-left : 10px;
+		margin : 10px 0 10px 0;
+		gap : 30px;
+	}
+	
+}
+  .campaign-title-area {
+    height: 100px;
+  }
+
+  .search-section {
+    & > .category-area {
+      justify-content: space-between;
+      height: 75px;
+      background-color: #F9F9F9;
+      border-bottom: 1px solid #CAC4D0;
+
+      & > label {
+        display: flex;
+        flex-grow: 1;
+
+        & > input {
+          display: none;
+        }
+
+        & > span {
+          width: 100%;
+          height: 100%;
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+
+          & > .category-seleted-box {
+            width: 30px;
+            height: 5px;
+            background-color: #6750A4;
+            border-radius: 5px 5px 0 0;
+          }
+        }
+      }
+    }
+
+    & > .search-area {
+      justify-content: flex-end;
+      height: 50px;
+      padding: 10px 0 10px 0;
+      gap: 20px;
+      & > .sortBy{
+      
+      }
+    }
+  }
+  
+  /**/
+.campaign-main-list-area {
+  padding-top: 25px;
+}
+
+.campaign-main-list-area > .campaign-main-block {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  transform: translateY(0);
+  cursor: pointer;
+  display: inline-block;
+  width: 353px;
+  padding: 0 25px 20px 0;
+  vertical-align: top;
+}
+
+.campaign-main-list-area > .campaign-main-block > .campaign-thumbnail {
+  height: 200px;
+  width: 320px;
+  background-color: #DDE1FF;
+  border-radius: 15px;
+  position: relative;
+}
+
+.campaign-main-list-area > .campaign-main-block > .campaign-thumbnail > .cmpn-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+  filter: blur(10px);
+  img {
+  	filter: blur(10px);
+  }
+
+  
+}
+
+.campaign-main-list-area > .campaign-main-block:hover,
+.campaign-main-list-area > .campaign-main-block:focus,
+.campaign-main-list-area > .campaign-main-block:focus-within {
+  outline: none;
+  transform: translate3d(0, -10px, 0);
+}
+  
+  /**/
+  .padding-10px{
+    padding-left:10px;
+  }
+  .campaign-hover-blue:hover {
+    background-color: #DDE1FF;
+  }
+
+  & > .campaign-detail-wrapper {
+    padding: 45px 65px 50px 65px;
+
+    & > .cmpn-top-area {
+      font-size: 24px;
+      border-bottom: 1px solid black;
+      margin-bottom: 10px;
+      padding: 0 0 10px 10px;
+
+      & > .cmpn-title {
+        font-size: 36px;
+        padding-bottom: 10px;
+      }
+    }
+
+    & > .cmpn-bottom-area {
+      display: flex;
+      padding : 0 25px 0 25px;
+      & > .cmpn-profile-area{
+        display: flex;
+        align-items: center;
+        border : 1px solid black;
+        border-radius : 5px;
+        flex-grow: 1;
+        & > div {
+            width : 100%;
+            height : 100%;
+        }
+        & > .profile-middle{
+            & > div {
+               flex-grow: 1;
+            }
+        }
+        & > .profile-middle::after{
+        	content: "|"
+        }
+        & > .profile-middle::before{
+        	content: "|"
+        }
+      }
+      
+      
+      
+      & > .cmpn-content-area {
+        flex-grow: 1;
+        font-size: 24px;
+        width: 1020px;
+
+        & > .campaign-detail-table {
+          display: flex;
+          flex-direction: column;
+
+          li {
+            display: flex;
+            padding: 15px 0 10px 0;
+            flex-direction: row;
+
+            label {
+              flex: 0 0 277px;
+            }
+
+            div {
+              flex-grow: 1;
+            }
+            
+            img {
+                max-width: 1200px;
+            }
+            
+            & > pre {
+                white-space: pre-wrap;
+                font-family: sans-serif;
+            }
+          }
+        }
+      }
+
+      & > .cmpn-rightbar-area {
+        width: 423px;
+
+        & > .right-bar {
+          border: 1px solid black;
+          margin: 0 0 0 90px;
+          width: 330px;
+          border-radius: 10px;
+          position: sticky;
+          top: 100px;
+          right: 60px;
+
+          & > .right-bar-top {
+            & > .right-bor-top-wrapper {
+              padding: 13px 33px 0 33px;
+
+              & > .right-bar-detail-table {
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 20px;
+
+                li {
+                  display: flex;
+                  flex-direction: row;
+                  height: 25px;
+
+                  label {
+                    flex: 0 0 130px;
+                  }
+
+                  div {
+                    flex-grow: 1;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .px36blue {
+    font-size: 36px;
+    font-weight: bold;
+    color: #5A67BA;
+  }
+  .px24 {
+    font-size: 24px;
+  }
+  .green-24px{
+    color: #00A906;
+    font-weight: bold;
+  }
+  .red-24px{
+    color: #FF676A;
+  }
+   .campaign-now-status-2005, .campaign-now-status-2006{
+    color : #AEB400;
+    font-weight : bold;
+    padding-right:8px;
+   }  
+   .campaign-pst-status-6001{
+    color : blue;
+    font-weight : bold;
+    padding-right:8px;
+   }  
+   .campaign-pst-status-6002{
+    color : #AEB400;
+    font-weight : bold;
+    padding-right:8px;
+   }  
+   .campaign-pst-status-6003{
+    color : #FF676A;
+    font-weight : bold;
+    padding-right:8px;
+   }  
+   .campaign-pst-status-6004{
+    color : #00A906;
+    font-weight : bold;
+    padding-right:8px;
+   }
+   .campaign-now-status-2009{
+    color : gray;
+    font-weight : bold;
+    padding-right:8px;   
+   }
+   .apply-blg{
+    margin : 0 30px 20px 30px;
+    border-radius : 10px;
+    color : white;
+    background-color : #5A67BA;
+    height : 60px;
+    font-size : 24px;
+    font-weight : bold;
+   }
+   .apply-cancel-blg{
+    margin : 0 30px 20px 30px;
+    border-radius : 10px;
+    color : white;
+    background-color : #FF676A;
+    height : 60px;
+    font-size : 24px;
+    font-weight : bold;
+   }
+   .required-login{
+    margin : 0 30px 20px 30px;
+    border-radius : 10px;
+    color : white;
+    background-color : #787B80;
+    height : 60px;
+    font-size : 24px;
+    font-weight : bold;   
+   }
+   .love-on {
+     width:35px;
+     height:35px;
+     background-image : url("/img/heartOn.png");
+     background-repeat: no-repeat;
+     background-size: cover;
+     z-index :99;
+            }
+   .love-off {
+    width:35px;
+    height:35px;
+    background-image : url("/img/heartOff.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index :99;            
+            }
+    .status--  {
+    margin : 0 30px 20px 30px;
+    border-radius : 10px;
+    color : white;
+    height : 60px;
+    font-size : 24px;
+    font-weight : bold;       
+    }
+    .status--approved { 
+    background-color : #00A906;   
+    }
+    .status--rejected { 
+    background-color : #FF676A;    
+    }
+    .status--review   { 
+    background-color : #B1B700;    
+    }
+    .status--draft    {
+    background-color : #5A67BA;
+    }    
+    .status--end{
+    background-color : gray;
+    }
+    .pst-stts-cd-6001{
+    color : #5A67BA;
+    font-weight: bold;
+    }
+    .pst-stts-cd-6002{
+    color : #B1B700;
+    font-weight : bold;
+    }
+    .pst-stts-cd-6003{
+    color : #FF676A;
+    font-weight: bold;
+    }
+    .pst-stts-cd-6004{
+    color : #00A906;
+    font-weight : bold;
+    }
+    .return-reason-box{
+    margin : 10px 30px 20px 30px;
+    	& > .return-reason-title{
+    		font-size : 24px;
+    		font-weight : bold;
+    	}
+    }
+    .cmpn-detail-image{
+      width : 1000px;
+      object-fit: cover;
+      
+    }
+
+}
+    .inline-block{
+    display:inline-block;
+    }
+    
+.side-padding {
+  padding: 0 100px 0 75px;
+}
+
+.submit-modal-area{
+  position: fixed;      
+  inset: 0;             
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);   
+  align-items: center;   
+  justify-content: center; 
+  z-index: 1000;         
+  & > .submit-modal{
+	  align-items: center;   
+	  justify-content: center; 	
+	  background: #fff;
+	  border-radius: 10px;
+	  min-width: 220px;
+	  width: 50vw;
+	  height: 60vh;
+	  padding:  0 24px 24px 24px;
+	  overflow: auto; 
+	  position: absolute;
+	  top : 20%;
+	  left: 25%;
+	  & > .submit-modal-title{
+		  height: 70px;
+		  border-bottom : 1px solid #D9D9D9;
+		  font-size : 24px;
+		  font-weight : bold;
+		  padding-left : 15px;
+		  margin-bottom : 30px;
+		  }
+	  & > .submit-modal-field{
+	  	height: 70px;
+	  	gap : 50px;
+	  	& > .submit-modal-label{
+	  		font-size : 24px;
+	  	}
+	  	& > .submit-modal-file{
+            width : 500px;
+            height :40px;	
+            padding: 8px 0 0 15px;
+            & > .file-insert{
+	            width : 30px;
+	            height :30px;            
+	            align-items: center
+            }  	    
+	  	}
+	  	& > .submit-modal-input{
+	  		width : 500px;
+	  		height :40px;
+	  		border-radius : 10px;
+	  		border: 1px solid gray;
+	  		font-size : 20px;
+	  	}
+	  	& > .submit-modal-input::placeholder{
+	  		font-size : 20px;
+	  	}
+	  	& > .re-submit-cn{
+	  		height: 130px;
+	  	}
+	  }
+	  & > .re-submit-area{
+	  	height: 150px;
+	  }
+	  & > .submit-modal-actions{
+	  		position : absolute;
+	  		bottom : 15px;
+	  		right : 15px;	  	
+	  		gap : 20px;
+	  		& > .submit-modal-btn{
+	  			width : 100px;
+	  			height : 35px;
+	  			border-radius : 4px;
+	  		}
+	  		& > .submit-modal-btn-ok {
+	  			background-color : #1A62F8;
+	  			color : white;
+	  		}
+	  		& >.submit-modal-btn-close{
+	  			color : #333;
+	  		}	  		
+	  	}
+	}
+  
+ .re-submit-modal-btn-ok {
+	  	background-color : #1A62F8;
+	  	color : white;
+	  	}
+}
+.line-through{
+	text-decoration: line-through;
+}
+.italic{
+	font-style: italic;
+}
+.gap5px{
+	
+}
+
+
+.subscribe-area{
+	padding-top : 50px;
+	gap : 250px ;
+	& > .subscribe-box{
+	box-shadow: 0 2px 12px rgba(0,0,0,0.3);	   border-radius : 10px;
+	   padding:15px;
+	   width : 300px;
+	   height : 500px;
+		& > .product-title{
+		   font-size : 24px;
+		   height : 100px;
+           font-weight : bold;
+		}
+		& > .product-content{
+		   font-size : 16px;
+           height : 50px;		   
+		}
+		& > .product-price-area{
+		    height : 150px;
+		    display:flex;
+            justify-content: flex-end;
+            margin-bottom : 50px;
+		}
+		.product-price{
+		   font-size : 20px;
+           font-weight : bold;		   
+		}
+		
+		.product-submit{
+		   width : 270px;
+		   height: 60px;
+		   border-radius : 10px;
+		   background-color : #7B61FF;
+		   color : white;  
+		   font-weight : bold;
+		   font-size : 24px;
+		}
+	}
+    .pay-day{
+       font-size:16px;
+    }
+    .discount-percent{
+        padding-left : 5px;
+        font-size:14px;
+        font-weight : bold;
+        color: red;
+    }	
+}
+.payment-bottom{
+  position: fixed;
+  bottom: 0;
+  right : 0;
+  z-index: 10;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  width: calc(100vw - 290px); 
+  height : 100px;
+  gap : 30px;
+  align-items: center;
+  justify-content: flex-end;
+  .payment-bottom-title{
+  	font-size : 24px;
+  }
+  .payment-bottom-button{
+  	background-color: #7B61FF;
+  	border-radius : 10px;
+  	color : white;
+  	width : 220px;
+  	height: 65px;
+  	font-size : 24px;
+  	margin : 30px;
+  }
+}
+
+
+
+.end-pay{
+	font-size: 24px;
+	text-decoration: underline;}
+
+
+
+
+
+
+
+
+

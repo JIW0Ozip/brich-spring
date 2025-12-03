@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.user.dao.impl.AdminUserDaoImpl">
+
+    <!-- 회원 관리 - 회원 전체 목록 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.user.vo.AdminUserListVO" id="AdminUserListVOMap" autoMapping="true">
+        <id column="USR_ID" property="usrId" />
+        <result column="CMPN_ALL_CNT" property="cmpnAllCnt" />
+        <result column="CMPN_PRGRSS_CNT" property="cmpnPrgrssCnt" />
+        <result column="REGIST_ACPT" property="registAcpt" />
+    </resultMap>
+    <select id="selectAdminUserList" resultMap="AdminUserListVOMap">
+        SELECT U.USR_ID 
+             , U.LOG_ID
+             , U.NM
+             , U.AUTR
+             , U.BLG_ADDRS
+             , U.RCNT_BLG_CRTFCTN_DT
+             , CASE
+                   WHEN U.AUTR IN ('1002', '1003')
+                   THEN (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                          FROM CMPN_PST_ADPT C_ADPT
+                         INNER JOIN CMPN C
+                            ON C.CMPN_ID = C_ADPT.CMPN_ID
+                         WHERE C.DLT_YN = 'N'
+                           AND C_ADPT.DLT_YN = 'N'
+                           AND C_ADPT.BLG_USR_ID = U.USR_ID
+                           AND C.STTS_CD = '2007'
+                           AND C_ADPT.ADPT_YN = 'Y')
+                   WHEN U.AUTR = '1004'
+                   THEN (SELECT COUNT(C.CMPN_ID)
+                          FROM CMPN C
+                         WHERE C.DLT_YN = 'N'
+                           AND C.STTS_CD = '2007'
+                           AND C.USR_ID = U.USR_ID)
+                    END AS CMPN_PRGRSS_CNT
+             , CASE 
+                   WHEN U.AUTR IN ('1002', '1003')
+                   THEN (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                           FROM CMPN_PST_ADPT C_ADPT
+                          INNER JOIN CMPN C
+                             ON C.CMPN_ID = C_ADPT.CMPN_ID
+                          WHERE C.DLT_YN = 'N'
+                            AND C_ADPT.DLT_YN = 'N'
+                            AND C_ADPT.BLG_USR_ID = U.USR_ID
+                            AND C.STTS_CD = '2007'
+                            AND C_ADPT.ADPT_YN = 'Y')
+                   WHEN U.AUTR = '1004'
+                   THEN (SELECT COUNT(C.CMPN_ID)
+                           FROM CMPN C
+                          INNER JOIN CMPN_PYMNT CP
+                             ON CP.CMPN_ID = C.CMPN_ID
+                          WHERE C.DLT_YN = 'N'
+                            AND C.USR_ID = U.USR_ID
+                            AND C.STTS_CD IN ('2005', '2006', '2007', '2009'))
+                   END AS CMPN_ALL_CNT
+             , CASE 
+                   WHEN U.RCNT_LGN_SCS_DT IS NULL
+                   THEN '-'
+                   WHEN U.RCNT_LGN_SCS_DT IS NOT NULL
+                   THEN TO_CHAR(U.RCNT_LGN_SCS_DT, 'YYYY-MM-DD HH24:MI:SS')
+                END AS RCNT_LGN_SCS_DT
+             , U.PNLT_CNT
+             , CASE
+                   WHEN U.AUTR = '1007'
+                   THEN 'N'
+                   WHEN U.AUTR = '1004'
+                   THEN 'Y'
+                   ELSE '-'
+                END AS REGIST_ACPT
+             , U.SBSCRPTN_EXPRS_DT
+             , U.CRT_DT
+          FROM USR U
+          WHERE U.DLT_YN = 'N'
+            AND U.AUTR NOT IN ('1001', '1005', '1008')
+          ORDER BY
+				   CASE
+				       WHEN U.AUTR = '1007'
+				       THEN 0
+				       ELSE 1
+				   END, 
+				       U.CRT_DT DESC
+    </select>
+    
+    <!-- 회원 관리 - 블로거 목록 -->
+    <select id="selectAdminBloggerList" resultMap="AdminUserListVOMap">
+        SELECT U.USR_ID 
+             , U.LOG_ID
+             , U.EML
+             , U.NM
+             , U.AUTR
+             , U.BLG_ADDRS
+             , U.RCNT_BLG_CRTFCTN_DT
+             , (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                  FROM CMPN_PST_ADPT C_ADPT
+                 INNER JOIN CMPN C
+                    ON C.CMPN_ID = C_ADPT.CMPN_ID
+                 WHERE C.DLT_YN = 'N'
+                   AND C_ADPT.DLT_YN = 'N'
+                   AND C_ADPT.BLG_USR_ID = U.USR_ID
+                   AND C.STTS_CD = '2007'
+                   AND C_ADPT.ADPT_YN = 'Y') AS CMPN_PRGRSS_CNT
+             , (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                   FROM CMPN_PST_ADPT C_ADPT
+                  INNER JOIN CMPN C
+                     ON C.CMPN_ID = C_ADPT.CMPN_ID
+                  WHERE C.DLT_YN = 'N'
+                    AND C_ADPT.DLT_YN = 'N'
+                    AND C_ADPT.BLG_USR_ID = U.USR_ID
+                    AND C.STTS_CD = '2007'
+                    AND C_ADPT.ADPT_YN = 'Y') AS CMPN_ALL_CNT
+             , CASE 
+                   WHEN U.RCNT_LGN_SCS_DT IS NULL
+                   THEN '-'
+                   WHEN U.RCNT_LGN_SCS_DT IS NOT NULL
+                   THEN TO_CHAR(U.RCNT_LGN_SCS_DT, 'YYYY-MM-DD HH24:MI:SS')
+                END AS RCNT_LGN_SCS_DT
+             , U.PNLT_CNT
+             , U.SBSCRPTN_EXPRS_DT
+             , U.CRT_DT
+          FROM USR U
+          WHERE U.DLT_YN = 'N'
+            AND U.AUTR IN ('1002', '1003')
+          ORDER BY U.CRT_DT DESC
+    </select>
+    
+    <!-- 회원 관리 - 광고주 목록 -->
+    <select id="selectAdminAdvertiserList" resultMap="AdminUserListVOMap">
+        SELECT U.USR_ID 
+             , U.LOG_ID
+             , U.NM
+             , U.AUTR
+             , CASE
+                   WHEN U.AUTR = '1007'
+                   THEN 'N'
+                   WHEN U.AUTR = '1004'
+                   THEN 'Y'
+                   ELSE '-'
+                END AS REGIST_ACPT
+             , (SELECT COUNT(C.CMPN_ID)
+                  FROM CMPN C
+                 WHERE C.DLT_YN = 'N'
+                   AND C.STTS_CD = '2007'
+                   AND C.USR_ID = U.USR_ID) AS CMPN_PROGRESS_CNT
+             , (SELECT COUNT(C.CMPN_ID)
+                  FROM CMPN C
+                 INNER JOIN CMPN_PYMNT CP
+                    ON CP.CMPN_ID = C.CMPN_ID
+                 WHERE C.DLT_YN = 'N'
+                   AND C.USR_ID = U.USR_ID
+                   AND C.STTS_CD IN ('2005', '2006', '2007', '2009')) AS CMPN_ALL_CNT
+             , CASE 
+                   WHEN U.RCNT_LGN_SCS_DT IS NULL
+                   THEN '-'
+                   WHEN U.RCNT_LGN_SCS_DT IS NOT NULL
+                   THEN TO_CHAR(U.RCNT_LGN_SCS_DT, 'YYYY-MM-DD HH24:MI:SS')
+                END AS RCNT_LGN_SCS_DT
+             , U.PNLT_CNT
+             , U.CRT_DT
+          FROM USR U
+         WHERE U.DLT_YN = 'N'
+           AND U.AUTR IN ('1004', '1007')
+         ORDER BY
+                 CASE
+                     WHEN U.AUTR = '1007'
+                     THEN 0
+                     ELSE 1
+                 END, 
+                     U.CRT_DT DESC
+    </select>
+    
+    <!-- 분기 처리를 위한 아이디로 권한 찾기 -->
+    <select id="selectAdminUserAutrById" parameterType="string">
+        SELECT AUTR
+          FROM USR
+         WHERE USR_ID = #{_parameter}
+    </select>
+    
+    <!-- 회원 관리 - 블로거 상세 정보 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.user.vo.AdminBloggerDetailVO" id="AdminBloggerDetailVOMap" autoMapping="true">
+        <id column="USR_ID" property="usrId" />
+        <result column="CMPN_PROGRESS_CNT" property="cmpnProgressCnt" />
+        <result column="CMPN_COMPLETED_CNT" property="cmpnCompletedCnt" />
+    </resultMap>
+    <select id="selectAdminBloggerDetailById" resultMap="AdminBloggerDetailVOMap" parameterType="string">
+        SELECT U.USR_ID 
+             , U.LOG_ID
+             , U.EML
+             , U.NM
+             , U.AUTR
+             , U.BLG_ADDRS
+             , U.RCNT_BLG_CRTFCTN_DT
+             , CASE 
+                   WHEN U.RCNT_LGN_SCS_DT IS NULL
+                   THEN '-'
+                   WHEN U.RCNT_LGN_SCS_DT IS NOT NULL
+                   THEN TO_CHAR(U.RCNT_LGN_SCS_DT, 'YYYY-MM-DD HH24:MI:SS')
+                END AS RCNT_LGN_SCS_DT
+             , (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                  FROM CMPN_PST_ADPT C_ADPT
+                 INNER JOIN CMPN C
+                    ON C.CMPN_ID = C_ADPT.CMPN_ID
+                 WHERE C.DLT_YN = 'N'
+                   AND C_ADPT.DLT_YN = 'N'
+                   AND C_ADPT.BLG_USR_ID = #{_parameter}
+                   AND C.STTS_CD = '2007'
+                   AND C_ADPT.ADPT_YN = 'Y') AS CMPN_PROGRESS_CNT
+             , (SELECT COUNT(C_ADPT.BLG_USR_ID)
+                  FROM CMPN_PST_ADPT C_ADPT
+                 INNER JOIN CMPN C
+                    ON C.CMPN_ID = C_ADPT.CMPN_ID
+                 WHERE C.DLT_YN = 'N'
+                   AND C_ADPT.DLT_YN = 'N'
+                   AND C_ADPT.BLG_USR_ID = #{_parameter}
+                   AND C.STTS_CD = '2009'
+                   AND C_ADPT.ADPT_YN = 'Y') AS CMPN_COMPLETED_CNT
+             , U.PNLT_CNT
+             , U.SBSCRPTN_EXPRS_DT
+             , U.AVRG_VSTR_CNT
+             , U.BLG_NGHBR_CNT
+             , U.SCRP_CNT
+             , U.CRT_DT
+             , U.UPDT_DT
+             , U.MTTR
+          FROM USR U
+          WHERE U.DLT_YN = 'N'
+            AND U.USR_ID = #{_parameter}
+    </select>
+    
+    <resultMap type="com.ktdsuniversity.edu.domain.campaign.vo.CampaignVO" id="CampaignVOMap" autoMapping="true">
+        <id column="CMPN_ID" property="cmpnId" />
+        <result column="CMPN_TITLE" property="cmpnTitle" />
+    </resultMap>
+    
+    <!-- 상세 정보 - 블로거가 현재 진행 중인 캠페인 리스트 (기준: 진행 중) -->
+    <select id="selectBloggerCmpnProgressList" parameterType="string" resultMap="CampaignVOMap">
+        SELECT C.CMPN_TITLE
+	         , C.CMPN_ID
+	      FROM CMPN C
+	     INNER JOIN CMPN_PST_ADPT C_ADPT 
+	        ON C_ADPT.CMPN_ID = C.CMPN_ID
+	     WHERE C.DLT_YN = 'N'
+	       AND C.STTS_CD = '2007'
+	       AND C_ADPT.BLG_USR_ID = #{_parameter}
+	       AND C_ADPT.ADPT_YN = 'Y'
+	       AND C_ADPT.DLT_YN = 'N'
+	     ORDER BY C.CRT_DT DESC
+    </select>
+    
+    <!-- 상세 정보 - 블로거가 참여했던 캠페인 (기준: 종료) -->
+    <select id="selectBloggerCmpnCompletedList" parameterType="string" resultMap="CampaignVOMap">
+        SELECT C.CMPN_TITLE
+	         , C.CMPN_ID
+	     FROM CMPN C
+	    INNER JOIN CMPN_PST_ADPT C_ADPT 
+	       ON C_ADPT.CMPN_ID = C.CMPN_ID
+	    WHERE C.DLT_YN = 'N'
+	      AND C.STTS_CD = '2009'
+	      AND C_ADPT.BLG_USR_ID = #{_parameter}
+	      AND C_ADPT.ADPT_YN = 'Y'
+	      AND C_ADPT.DLT_YN = 'N'
+	    ORDER BY C.CRT_DT DESC
+    </select>
+    
+    <!-- 상세 정보 - 블로거의 지역 정보 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.user.vo.AdminBloggerAreaInfoVO" id="AdminBloggerAreaInfoVOMap" autoMapping="true">
+        <id column="USR_AR_ID" property="usrArId" />
+        <result column="AR_ID" property="arId" />
+        <result column="CD_NM" property="cdNm" />
+    </resultMap>
+    <select id="selectBloggerAreaList" parameterType="string" resultMap="AdminBloggerAreaInfoVOMap">
+        SELECT U_AR.USR_AR_ID AS USR_AR_ID
+             , U_AR.AR_ID AS AR_ID
+		     , A.CD_NM AS CD_NM
+		  FROM USR_AR U_AR
+		  LEFT OUTER JOIN USR U
+		    ON U_AR.USR_ID = U.USR_ID
+		  LEFT OUTER JOIN AR_CD A
+		    ON U_AR.AR_ID = A.CD_ID
+		 WHERE U_AR.USR_ID = #{_parameter}
+		   AND U_AR.DLT_YN = 'N'
+    </select>
+    
+    <!-- 상세 정보 - 블로거의 카테고리 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.user.vo.AdminBloggerCategoryInfoVO" id="AdminBloggerCategoryInfoVOMap" autoMapping="true">
+        <id column="USR_ID" property="usrId" />
+        <result column="CD_ID" property="cdId" />
+        <result column="CD_NM" property="cdNm" />
+    </resultMap>
+    <select id="selectBloggerCategoryList" parameterType="string" resultMap="AdminBloggerCategoryInfoVOMap">
+        SELECT BC.USR_ID AS USR_ID
+             , BC.CD_ID AS CD_ID
+		     , C.CD_NM AS CD_NM
+		  FROM BLG_CTG BC
+		 INNER JOIN USR U
+		    ON BC.USR_ID = U.USR_ID 
+		 INNER JOIN CM_CD C
+		    ON BC.CD_ID = C.CD_ID
+		 WHERE BC.USR_ID = #{_parameter}
+		   AND BC.DLT_YN = 'N'
+    </select>
+    
+    <!-- 회원 관리 - 광고주 상세 정보 -->
+    <resultMap type="com.ktdsuniversity.edu.domain.user.vo.AdminAdvertiserDetailVO" id="AdminAdvertiserDetailVOMap" autoMapping="true">
+        <id column="USR_ID" property="usrId" />
+        <result column="CMPN_PROGRESS_CNT" property="cmpnProgressCnt" />
+        <result column="CMPN_COMPLETED_CNT" property="cmpnCompletedCnt" />
+        
+        <association property="fileGroupVO"
+                     javaType="com.ktdsuniversity.edu.domain.file.vo.FileGroupVO"
+                     autoMapping="true">
+            <id column="FL_GRP_ID" property="flGrpId" />
+            <collection property="file"
+                        javaType="list" 
+                        ofType="com.ktdsuniversity.edu.domain.file.vo.FileVO"
+                        autoMapping="true">
+                <id column="FL_ID" property="flId" />
+            </collection>
+        </association>
+    </resultMap>
+    <select id="selectAdminAdvertiserDetailById" parameterType="string" resultMap="AdminAdvertiserDetailVOMap">
+        SELECT U.USR_ID 
+             , U.LOG_ID
+             , U.EML
+             , U.NM
+             , U.AUTR
+             , U.CMPNY 
+             , CASE
+                   WHEN U.AUTR = '1007'
+                   THEN 'N'
+                   WHEN U.AUTR = '1004'
+                   THEN 'Y'
+                   ELSE '-'
+                END AS REGIST_ACPT
+             , (SELECT COUNT(C.CMPN_ID)
+                    FROM CMPN C
+                   WHERE C.DLT_YN = 'N'
+                     AND C.STTS_CD = '2009'
+                     AND C.USR_ID = U.USR_ID) AS CMPN_COMPLETED_CNT
+             , (SELECT COUNT(C.CMPN_ID)
+                  FROM CMPN C
+                 WHERE C.DLT_YN = 'N'
+                   AND C.STTS_CD IN ('2005', '2006', '2007', '2009')
+                   AND C.USR_ID = U.USR_ID) AS CMPN_PROGRESS_CNT
+             , CASE 
+                   WHEN U.RCNT_LGN_SCS_DT IS NULL
+                   THEN '-'
+                   WHEN U.RCNT_LGN_SCS_DT IS NOT NULL
+                   THEN TO_CHAR(U.RCNT_LGN_SCS_DT, 'YYYY-MM-DD HH24:MI:SS')
+                END AS RCNT_LGN_SCS_DT
+             , U.PNLT_CNT
+             , U.CRT_DT
+             , U.UPDT_DT
+             , U.MTTR
+             , F.FL_GRP_ID
+             , F.FL_ID
+             , F.FL_NM
+             , F.FL_PTH
+             , F.OBFSCTIN_FL_NM
+          FROM USR U
+          LEFT OUTER JOIN (SELECT FG.FL_GRP_ID 
+                                , F.FL_ID
+                                , F.FL_NM
+                                , F.FL_SZ 
+                                , F.FL_PTH 
+                                , F.FL_TYP 
+                                , F.OBFSCTIN_FL_NM 
+                             FROM FL_GRP FG
+                            INNER JOIN FL F
+                               ON FG.FL_GRP_ID = F.FL_GRP_ID
+                            WHERE F.DLT_YN = 'N') F
+            ON U.FL_GRP_ID = F.FL_GRP_ID
+         WHERE U.DLT_YN = 'N'
+           AND U.AUTR IN ('1004', '1007')
+           AND U.USR_ID = #{_parameter}
+    </select>
+    
+    <!-- 상세 정보 - 광고주가 현재 진행 중인 캠페인 리스트 (기준: 모집 중 ~ 종료) -->
+    <select id="selectAdvertiserCmpnProgressList" parameterType="string" resultMap="CampaignVOMap">
+        SELECT C.CMPN_TITLE
+		     , C.CMPN_ID
+		  FROM CMPN C
+		 WHERE C.DLT_YN = 'N'
+		   AND C.STTS_CD IN ('2005', '2006', '2007', '2009')
+		   AND C.USR_ID = #{_parameter}
+		 ORDER BY C.CRT_DT DESC
+    </select>
+    
+    <!-- 상세 정보 - 광고주가 진행했던 캠페인 리스트 (기준: 종료) -->
+    <select id="selectAdvertiserCmpnCompletedList" parameterType="string" resultMap="CampaignVOMap">
+        SELECT C.CMPN_TITLE
+		     , C.CMPN_ID
+		  FROM CMPN C
+		 WHERE C.DLT_YN = 'N'
+		   AND C.STTS_CD = '2009'
+		   AND C.USR_ID = #{_parameter}
+		 ORDER BY C.CRT_DT DESC
+    </select>
+    
+    <!-- 상세 정보 - 광고주 가입 승인 -->
+    <update id="updateAdvertiserAuthCodeByApprove" parameterType="map">
+        UPDATE USR
+		   SET AUTR = #{autr}
+		 WHERE USR_ID = #{usrId}
+		   AND DLT_YN = 'N'
+    </update>
+    
+    <!-- 상세 정보 - 광고주 가입 반려 -->
+    <update id="updateAdvertiserAuthCodeByReject" parameterType="map">
+        UPDATE USR
+           SET AUTR = #{autr}
+             , DLT_YN = 'Y'
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'N'
+    </update>
+    
+    <!-- 블로거가 선택할 수 있는 카테고리 리스트 받아오기 -->
+    <select id="selectBlogCategoryList" resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+        SELECT CD_ID
+             , CD_NM
+          FROM CM_CD
+         WHERE DLT_YN = 'N'
+           AND USE_YN = 'Y'
+           AND (CASE 
+                    WHEN REGEXP_LIKE(CD_ID, '^[0-9]+$') 
+                    THEN TO_NUMBER(CD_ID)
+                    ELSE -1 
+                END) 
+           BETWEEN 3001 AND 3999
+    </select>
+    
+    <!-- UserVO 정보 조회 (회원 정보 수정 시 기존 정보 비교를 위함) -->
+    <select id="selectUserInfoById" parameterType="string" resultType="com.ktdsuniversity.edu.domain.user.vo.UserVO">
+        SELECT USR_ID
+             , LOG_ID
+             , EML
+             , PSWRD
+             , NM
+             , SALT
+             , LGN_PL_CNT
+             , BLCK_YN
+             , RCNT_LGN_BLCK_DT
+             , RCNT_LGN_FL_DT
+             , RCNT_LGN_SCS_DT
+             , AUTR
+             , SBSCRPTN_EXPRS_DT
+             , PNLT_CNT
+             , RCNT_BLG_CRTFCTN_DT
+             , BLG_ADDRS
+             , CRTFD_ADMIN
+             , TTL_VSTR_CNT
+             , AVRG_VSTR_CNT
+             , BLG_NGHBR_CNT
+             , SCRP_CNT
+             , CMPNY
+             , FL_GRP_ID
+             , CRT_DT
+             , CRTR
+             , UPDT_DT
+             , MTTR
+             , DLT_YN
+         FROM USR
+        WHERE DLT_YN = 'N'
+          AND USR_ID = #{_parameter}
+    </select>
+    
+    <!-- 사용자 기본 정보 수정 -->
+    <update id="updateUserInfo" parameterType="map">
+        UPDATE USR
+           SET LOG_ID = #{logId}
+             , EML = #{eml}
+             , NM = #{nm}
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'N'
+    </update>
+    
+    <!-- 광고주 전용 정보 수정 (회사명) -->
+    <update id="updateAdvertiserInfo" parameterType="com.ktdsuniversity.edu.domain.user.vo.AdminUserModifyInfoVO">
+        UPDATE USR
+           SET CMPNY = #{cmpny}
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE USR_ID = #{usrId}
+           AND DLT_YN = 'N'
+    </update>
+    
+    <!-- 회원 정보 수정 이력 테이블 데이터 INSERT -->
+    <insert id="insertUpdateHistory" parameterType="list">
+        INSERT INTO USR_UPDT_HIST (USR_UPDA_HIST_ID
+                                 , USR_ID
+                                 , UPDT_ITEM
+                                 , BEF_UPDT_CN
+                                 , AFT_UPDT_CN
+                                 , UPDT_ADMIN
+                                 , UPDT_RSN
+                                 , CRT_DT
+                                 , CRTR
+                                 , UPDT_DT
+                                 , MTTR
+                                 , DLT_YN)
+                    SELECT 'USR_UPDT_HIST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_USR_UPDT_HIST_PK.NEXTVAL, 6, '0')
+                         , T.*
+                      FROM (
+                          <foreach collection="list" item="historyData" separator="UNION ALL">
+                            SELECT #{historyData.usrId} AS USR_ID
+                                 , #{historyData.updtItem} AS UPDT_ITEM
+                                 , #{historyData.befUpdtCn} AS BEF_UPDT_CN
+                                 , #{historyData.aftUpdtCn} AS AFT_UPDT_CN
+                                 , #{historyData.updtAdmin} AS UPDT_ADMIN
+                                 , #{historyData.updtRsn} AS UPDT_RSN
+                                 , SYSDATE AS CRT_DT
+                                 , #{historyData.updtAdmin} AS CRTR
+                                 , SYSDATE AS UPDT_DT
+                                 , #{historyData.updtAdmin} AS MTTR
+                                 , 'N' AS DLT_YN
+                              FROM DUAL
+                          </foreach>
+                          ) T
+    </insert>
+    
+    <!-- 블로그 수동 인증 (UPDATE) -->
+    <update id="updateBlogAddress" parameterType="com.ktdsuniversity.edu.domain.user.vo.AdminUserModifyInfoVO">
+        UPDATE USR
+          SET BLG_ADDRS = #{blgAddrs}
+            , RCNT_BLG_CRTFCTN_DT = SYSDATE
+            , UPDT_DT = SYSDATE
+            , MTTR = #{adminId}
+        WHERE DLT_YN = 'N'
+          AND USR_ID = #{usrId}
+    </update>
+    
+    <!-- 블로그 수동 인증 -> 수정 이력 테이블에 INSERT -->
+    <insert id="insertHistoryToBlogAddress" parameterType="com.ktdsuniversity.edu.domain.user.vo.UserUpdateHistoryVO">
+	    <selectKey keyProperty="usrUpdaHistId" order="BEFORE" resultType="string">
+	        SELECT 'USR_UPDT_HIST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_USR_UPDT_HIST_PK.NEXTVAL, 6, '0')
+	          FROM DUAL
+	    </selectKey>
+        INSERT INTO USR_UPDT_HIST (USR_UPDA_HIST_ID
+                                 , USR_ID
+                                 , UPDT_ITEM
+                                 , BEF_UPDT_CN
+                                 , AFT_UPDT_CN
+                                 , UPDT_ADMIN
+                                 , UPDT_RSN
+                                 , CRT_DT
+                                 , CRTR
+                                 , UPDT_DT
+                                 , MTTR
+                                 , DLT_YN)
+                           VALUES (#{usrUpdaHistId}
+                                 , #{usrId}
+                                 , #{updtItem}
+                                 , #{befUpdtCn}
+                                 <if test="updtItem.equals('BLG_ADDRS')">
+                                 , #{aftUpdtCn}
+                                 </if>
+                                 <if test="updtItem.equals('RCNT_BLG_CRTFCTN_DT')">
+                                 , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS')
+                                 </if>
+                                 , #{updtAdmin}
+                                 , #{updtRsn}
+                                 , SYSDATE
+                                 , #{updtAdmin}
+                                 , SYSDATE
+                                 , #{updtAdmin}
+                                 , 'N')
+    </insert>
+    
+    <!-- 신고 상세 정보에서 징계 처리할 경우, 신고 대상의 징계 횟수를 가져옴 -->
+    <select id="selectPenaltyCountById" parameterType="string" resultType="_int">
+        SELECT PNLT_CNT
+          FROM USR
+         WHERE USR_ID = #{_parameter}
+    </select>
+    
+    <!-- 신고 대상 회원의 징계 횟수를 1 증가시키고, 증가 시킨 횟수가 3이상일 경우 BLOCK 처리 -->
+    <update id="updateUserPenaltyCount" parameterType="com.ktdsuniversity.edu.domain.report.vo.AdminPenaltyRequestVO">
+        UPDATE USR
+           SET PNLT_CNT = PNLT_CNT + 1
+             , BLCK_YN = CASE 
+                             WHEN PNLT_CNT + 1 >= 3
+                             THEN 'Y'
+                             ELSE BLCK_YN
+                          END
+             , UPDT_DT = SYSDATE
+             , MTTR = #{adminId}
+         WHERE USR_ID = <if test="usrId == '' or usrId == null">
+                            #{rptedUsrId}
+                        </if> 
+                        
+                        <if test="rptedUsrId == '' or rptedUsrId == null">
+                            #{usrId}
+                        </if>
+           AND DLT_YN = 'N'
+    </update>
+    
+    <!-- 회원 정보 수정 이력 테이블에 징계 횟수 증가 사항 INSERT -->
+    <insert id="insertNewHistoryByPenaltyCount" parameterType="com.ktdsuniversity.edu.domain.user.vo.UserUpdateHistoryVO">
+        <selectKey keyProperty="usrUpdaHistId" order="BEFORE" resultType="string">
+            SELECT 'USR_UPDT_HIST-' || TO_CHAR(SYSDATE, 'YYYYMMDD-') || LPAD(SEQ_USR_UPDT_HIST_PK.NEXTVAL, 6, '0')
+              FROM DUAL
+        </selectKey>
+        INSERT INTO USR_UPDT_HIST (USR_UPDA_HIST_ID
+                                 , USR_ID
+                                 , UPDT_ITEM
+                                 , BEF_UPDT_CN
+                                 , AFT_UPDT_CN
+                                 , UPDT_ADMIN
+                                 , UPDT_RSN
+                                 , CRT_DT
+                                 , CRTR
+                                 , UPDT_DT
+                                 , MTTR
+                                 , DLT_YN)
+                           VALUES (#{usrUpdaHistId}
+                                 , #{usrId}
+                                 , #{updtItem}
+                                 , #{befUpdtCn}
+                                 , #{aftUpdtCn}
+                                 , #{updtAdmin}
+                                 , #{updtRsn}
+                                 , SYSDATE
+                                 , #{updtAdmin}
+                                 , SYSDATE
+                                 , #{updtAdmin}
+                                 , 'N')
+    </insert>
+    
+</mapper>

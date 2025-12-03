@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ktdsuniversity.edu.domain.blog.dao.impl.GoldenKeyWordDaoImpl">
+
+    <select id="selectUserCategories" parameterType="string" resultType="com.ktdsuniversity.edu.global.common.CommonCodeVO">
+        SELECT C.CD_ID
+             , C.CD_NM
+             , C.VALUE1
+             , C.VALUE2
+             , C.VALUE3
+          FROM CM_CD C
+         INNER JOIN BLG_CTG B
+            ON C.CD_ID = B.CD_ID
+         WHERE B.USR_ID = #{_parameter}
+           AND C.PRNT_CD_ID = '3000'
+           AND C.USE_YN = 'Y'
+           AND C.DLT_YN = 'N'
+           AND B.DLT_YN = 'N'
+         ORDER BY C.SRT
+    </select>
+
+</mapper>
