@@ -16,6 +16,7 @@ import com.ktdsuniversity.edu.domain.pay.service.PayService;
 import com.ktdsuniversity.edu.domain.pay.vo.request.RequestPaymentCampaignVO;
 import com.ktdsuniversity.edu.domain.pay.vo.request.RequestPaymentVO;
 import com.ktdsuniversity.edu.domain.pay.vo.response.ResponsePaymentVO;
+import com.ktdsuniversity.edu.domain.user.vo.UserVO;
 import com.ktdsuniversity.edu.global.common.CommonCodeVO;
 import com.ktdsuniversity.edu.global.util.SessionUtil;
 
@@ -36,7 +37,7 @@ public class PayServiceImpl implements PayService{
 	
 	
 	@Override
-	public boolean paymentValidationCheck(RequestPaymentVO requestPaymentVO) {
+	public boolean paymentValidationCheck(RequestPaymentVO requestPaymentVO, UserVO loginUser) {
 		log.info("====== 결제정보 유효성 검사 저장 start ======");
 
 		// 테이블 조회 (주문번호, (유저아이디/캠페인번호), 가격)
@@ -55,7 +56,7 @@ public class PayServiceImpl implements PayService{
 		
 		log.info("====== 결제정보 유효성 검사 FAIL !! ======");
 		// 실패 상태 업데이트
-		String autr = SessionUtil.getLoginObject().getAutr();
+		String autr = loginUser.getAutr();
 		if((autr.equals("1002") || autr.equals("1003"))) {
 			this.payDao.updatePaymentFailSubscribe(PKkey);
 		} else if (autr.equals("1004")){
@@ -67,12 +68,12 @@ public class PayServiceImpl implements PayService{
 	
 	@Transactional
 	@Override
-	public int paymentSuccessUpdate(RequestPaymentVO requestPaymentVO) {
+	public int paymentSuccessUpdate(RequestPaymentVO requestPaymentVO , UserVO loginUser) {
 		log.info("====== 결제정보 업데이트 저장 start ======");
 
 		// 결제 정보 업데이트
-		String autr = SessionUtil.getLoginObject().getAutr();
-		requestPaymentVO.setClientUsrId(SessionUtil.getLoginObject().getUsrId());
+		String autr = loginUser.getAutr();
+		requestPaymentVO.setClientUsrId(loginUser.getUsrId());
 		int count = 0;
 		int counttest = 0;
 		
@@ -85,7 +86,7 @@ public class PayServiceImpl implements PayService{
 				// 구독기간, 권한 수정
 				counttest = this.payDao.updatePaymentSuccessDate(requestPaymentVO);
 				log.info(String.valueOf(counttest));
-				SessionUtil.getLoginObject().setAutr("1002");
+				loginUser.setAutr("1002");
 		} else if (autr.equals("1004")){
 				// 결제 테이블 수정
 				log.info("결제 테이블 수정 들어갑니다 : " + requestPaymentVO.toString());
@@ -117,11 +118,11 @@ public class PayServiceImpl implements PayService{
 
 	@Transactional
 	@Override
-	public String beforePaymentInfoSave(RequestPaymentVO requestPaymentVO) {
+	public String beforePaymentInfoSave(RequestPaymentVO requestPaymentVO, UserVO loginUser) {
 		log.info("====== 결제정보 사전 저장 start ======");
 		// 구독인지 캠페인 결제인지 확인
 		int count;
-		String autr = SessionUtil.getLoginObject().getAutr();
+		String autr = loginUser.getAutr();
 		if(autr.equals("1002") || autr.equals("1003")) {  //구독
 			count = this.payDao.insertBeforeSubscribePaymentInfoSave(requestPaymentVO);
 		} else if (autr.equals("1004")){
@@ -148,14 +149,17 @@ public class PayServiceImpl implements PayService{
 	@Override
 	public int payInfoCampaignSave(RequestPaymentCampaignVO requestPaymentCampaignVO) {
 		int count = this.payDao.updatePayInfoCampaignSave(requestPaymentCampaignVO);
-		
+		RequestPaymentVO requestPaymentVO = new RequestPaymentVO();
+		requestPaymentVO.setClientId(requestPaymentCampaignVO.getCmpnId());
+		count = this.payDao.updatePaymentCampaignStts(requestPaymentVO);
+
 		// 결제정보 있는지 확인
-		String isYN = this.payDao.selectCmpnPayment(requestPaymentCampaignVO);
-		if(isYN.equals("Y")) {
-			count = this.payDao.updatePaymentInfoCampaignSave(requestPaymentCampaignVO);
-		}else {
-			int count2 = this.payDao.insertPaymentInfoCampaignSave(requestPaymentCampaignVO);
-		}
+//		String isYN = this.payDao.selectCmpnPayment(requestPaymentCampaignVO);
+//		if(isYN.equals("Y")) {
+//			count = this.payDao.updatePaymentInfoCampaignSave(requestPaymentCampaignVO);
+//		}else {
+//			int count2 = this.payDao.insertPaymentInfoCampaignSave(requestPaymentCampaignVO);
+//		}
 		return count;
 	}
 
@@ -169,6 +173,12 @@ public class PayServiceImpl implements PayService{
 	@Override
 	public String beforeCampaigninfo(String clientCmpnId) {
 		return this.payDao.selectBeforeCampaigninfo(clientCmpnId);
+	}
+
+
+	@Override
+	public int subscribeAdd(String usrId) {
+		return this.payDao.updateSubscribeAdd (usrId);
 	}
 	
 	

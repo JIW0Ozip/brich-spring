@@ -91,7 +91,7 @@ public class WidgetApi {
     }
 
     @PostMapping(
-        value = "/orders/prepay",
+        value = "/api/pay/orders/prepay",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -102,6 +102,7 @@ public class WidgetApi {
 
         try {
             UserVO loginUser = AuthenticationUtil.getUserVO();
+            logger.info("loginUser : "+loginUser);
             if (loginUser == null) {
                 out.put("ok", false);
                 out.put("message", "Unauthorized (loginUser is null)");
@@ -134,23 +135,23 @@ public class WidgetApi {
             vo.setClientPrice(clientPrice);
             vo.setClientCdId(clientCdId);
 
-            String pkKey = this.payService.beforePaymentInfoSave(vo);
+            String pkKey = this.payService.beforePaymentInfoSave(vo, loginUser);
 
             if ("1004".equals(loginUser.getAutr())) {
                 logger.info("autr=1004, beforeCampaigninfo clientId={}", vo.getClientId());
                 pkKey = this.payService.beforeCampaigninfo(vo.getClientId());
             }
 
-            if (isBlank(pkKey)) {
-                logger.error("[prepay] pkKey 생성 실패. sessionId={}, orderId={}", session.getId(), clientOrderId);
-                out.put("ok", false);
-                out.put("message", "prepay pkKey 생성 실패 (beforePaymentInfoSave/DB 저장 로직 확인)");
-                out.put("orderId", clientOrderId);
-                return ResponseEntity.status(500).body(out);
-            }
+//            if (isBlank(pkKey)) {
+//                logger.error("[prepay] pkKey 생성 실패. sessionId={}, orderId={}", session.getId(), clientOrderId);
+//                out.put("ok", false);
+//                out.put("message", "prepay pkKey 생성 실패 (beforePaymentInfoSave/DB 저장 로직 확인)");
+//                out.put("orderId", clientOrderId);
+//                return ResponseEntity.status(500).body(out);
+//            }
 
-            session.setAttribute("PREPAY_PKKEY_" + clientOrderId, pkKey);
-            logger.info("[prepay] saved sessionKey={}, pkKey={}", "PREPAY_PKKEY_" + clientOrderId, pkKey);
+//            session.setAttribute("PREPAY_PKKEY_" + clientOrderId, pkKey);
+//            logger.info("[prepay] saved sessionKey={}, pkKey={}", "PREPAY_PKKEY_" + clientOrderId, pkKey);
 
             out.put("ok", true);
             out.put("orderId", clientOrderId);
@@ -187,7 +188,7 @@ public class WidgetApi {
         logger.info("============= 결제 confirm 시작 =============");
         logger.info("[confirm] sessionId={}, orderId={}, amount={}, paymentKey={}",
                 session.getId(), req.orderId, req.amount, req.paymentKey);
-
+        UserVO loginUser = AuthenticationUtil.getUserVO();
         String paymentKey = req.paymentKey;
         String orderId = req.orderId;
         String amount = req.amount;
@@ -249,12 +250,12 @@ public class WidgetApi {
             vo.setEasyAmount(easyAmount);
             vo.setPKkey(pkKey);
 
-            boolean paymentValidationCheck = this.payService.paymentValidationCheck(vo);
+            boolean paymentValidationCheck = this.payService.paymentValidationCheck(vo, loginUser);
             logger.info("[confirm] paymentValidationCheck={}", paymentValidationCheck);
 
             if (paymentValidationCheck) {
                 try {
-                    this.payService.paymentSuccessUpdate(vo);
+                    this.payService.paymentSuccessUpdate(vo, loginUser);
                     session.removeAttribute("PREPAY_PKKEY_" + orderId);
                 } catch (Exception e) {
                     logger.error("[confirm] paymentSuccessUpdate() 내부 예외 발생", e);

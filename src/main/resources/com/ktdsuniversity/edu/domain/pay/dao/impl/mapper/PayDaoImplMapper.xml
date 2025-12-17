@@ -342,6 +342,13 @@
          WHERE ORDER_ID=#{orderId}
            AND DLT_YN = 'N'
 </select>
+<update id="updateSubscribeAdd"
+        parameterType="string">
+		UPDATE USR
+		SET SBSCRPTN_EXPRS_DT = SBSCRPTN_EXPRS_DT + INTERVAL '30' DAY
+		WHERE USR_ID = #{useParam}
+</update>
+
 </mapper>
 
 

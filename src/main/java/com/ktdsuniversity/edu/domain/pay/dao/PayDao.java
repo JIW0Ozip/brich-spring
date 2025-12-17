@@ -53,6 +53,8 @@ public interface PayDao {
 
 	String selectPaymentCmpnId(RequestPaymentVO requestPaymentVO);
 
+	int updateSubscribeAdd(String usrId);
+
 
 
 }

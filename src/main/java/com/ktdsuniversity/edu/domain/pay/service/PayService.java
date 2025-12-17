@@ -5,6 +5,7 @@ import java.util.List;
 import com.ktdsuniversity.edu.domain.campaign.vo.response.ResponseCampaignVO;
 import com.ktdsuniversity.edu.domain.pay.vo.request.RequestPaymentCampaignVO;
 import com.ktdsuniversity.edu.domain.pay.vo.request.RequestPaymentVO;
+import com.ktdsuniversity.edu.domain.user.vo.UserVO;
 import com.ktdsuniversity.edu.global.common.CommonCodeVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -13,13 +14,13 @@ public interface PayService {
 
 	List<CommonCodeVO> payInfoServiceList();
 
-	boolean paymentValidationCheck(RequestPaymentVO requestPaymentVO);
+	boolean paymentValidationCheck(RequestPaymentVO requestPaymentVO, UserVO loginUser);
 
-	int paymentSuccessUpdate(RequestPaymentVO requestPaymentVO);
+	int paymentSuccessUpdate(RequestPaymentVO requestPaymentVO,UserVO loginUser);
 
 	CommonCodeVO payInfoService(String cdId);
 
-	String beforePaymentInfoSave(RequestPaymentVO requestPaymentVO);
+	String beforePaymentInfoSave(RequestPaymentVO requestPaymentVO, UserVO loginUser);
 
 	ResponseCampaignVO readCampaignPayment(String cmpnId, String usrId);
 
@@ -28,6 +29,8 @@ public interface PayService {
 	String payInfoServiceCampaignAmount(String cmpnId);
 
 	String beforeCampaigninfo(String clientCmpnId);
+
+	int subscribeAdd(String usrId);
 
 
 }

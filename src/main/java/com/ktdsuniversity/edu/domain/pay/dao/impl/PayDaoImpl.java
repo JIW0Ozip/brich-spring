@@ -129,5 +129,10 @@ public class PayDaoImpl extends SqlSessionDaoSupport implements PayDao{
 	@Override
 	public String selectPaymentCmpnId(RequestPaymentVO requestPaymentVO) {
 		return super.getSqlSession().selectOne(this.NAME_SPACE + "selectPaymentCmpnId", requestPaymentVO);
+	}
+
+	@Override
+	public int updateSubscribeAdd(String usrId) {
+		return super.getSqlSession().update(this.NAME_SPACE + "updateSubscribeAdd", usrId);
 	}    
 }
